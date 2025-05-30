@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My AI Personal Assistant - Saba Jamalian</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .blog-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .blog-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .blog-title {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .blog-date {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .blog-section {
+            margin-bottom: 2rem;
+        }
+
+        .blog-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .blog-section p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .tech-item {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .code-block {
+            background-color: #2d2d2d;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .diagram-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .architecture-diagram {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .diagram-caption {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="blog-content">
+            <div class="blog-header">
+                <h1 class="blog-title">Personal Assistant with a Telegram Bot and OpenAI</h1>
+                <p class="blog-date">March 2024</p>
+            </div>
+
+            <div class="blog-section">
+                <p>After using Alexa and Google Assistant for several years, I noticed about 90% of my interactions were always the same. I'd ask for the weather, control some smart lights, or maybe toss out the occasional random question. They were useful but only in a pretty limited way.</p>
+                <p>With all the fast progress (sometimes too fast) we've seen in AI, especially with tools like ChatGPT that can carry conversations, reason through tasks, and even generate complex content; why do voice assistants still feel stuck in 2015?</p>
+                <p>I don't have the answer, but tools like ChatGPT weren't built to control your smart home or manage daily tasks out of the box. They're designed for open-ended reasoning, not specific integrations.</p>
+            </div>
+
+            <div class="blog-section">
+                <ol>
+                    <li>User sends a voice message through Telegram</li>
+                    <li>Voice is processed by OpenAI to understand intent and required actions</li>
+                    <li>System executes appropriate functions based on the command</li>
+                    <li>Confirmation is sent back to the user through Telegram</li>
+                </ol>
+            </div>
+
+            <div class="blog-section">
+                <div class="diagram-container">
+                    <img src="assets/assistant-diagram.webp" alt="System Architecture Diagram" class="architecture-diagram">
+                </div>
+            </div>
+
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html> 
