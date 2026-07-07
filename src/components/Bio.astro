@@ -1,0 +1,92 @@
+---
+import { AUTHOR, SOCIALS } from '../consts';
+import Icon from './Icon.astro';
+---
+
+<section class="bio">
+  <img
+    src={AUTHOR.avatar}
+    alt={AUTHOR.name}
+    class="bio-avatar"
+    width="88"
+    height="88"
+    loading="eager"
+  />
+  <div class="bio-text">
+    <h1 class="bio-name">{AUTHOR.name}</h1>
+    <p class="bio-tagline">{AUTHOR.tagline}</p>
+    <p class="bio-desc">{AUTHOR.bio}</p>
+    <div class="bio-socials">
+      {
+        SOCIALS.map((s) => (
+          <a
+            href={s.href}
+            target="_blank"
+            rel="me noopener"
+            class="bio-social"
+          >
+            <Icon name={s.icon} size={15} />
+            {s.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .bio {
+    display: flex;
+    gap: 1.4rem;
+    align-items: flex-start;
+    padding: 2.5rem 0 1.5rem;
+  }
+  .bio-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .bio-name {
+    font-size: 1.7rem;
+    margin-bottom: 0.15rem;
+  }
+  .bio-tagline {
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+  }
+  .bio-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 0.9rem;
+  }
+  .bio-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+  .bio-social {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .bio-social:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  @media (max-width: 540px) {
+    .bio {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .bio-socials {
+      justify-content: center;
+    }
+  }
+</style>

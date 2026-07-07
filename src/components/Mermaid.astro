@@ -1,0 +1,88 @@
+---
+/**
+ * Renders a Mermaid diagram, client-side and theme-aware.
+ * Usage in MDX (pass the diagram as a template literal):
+ *   <Mermaid code={`
+ *   flowchart LR
+ *     A[Prompt] --> B{Agent}
+ *     B -->|tool call| C[Repo]
+ *   `} caption="How the agent loop touches the repo" />
+ */
+interface Props {
+  code: string;
+  caption?: string;
+}
+const { code, caption } = Astro.props;
+---
+
+<figure class="mermaid-figure">
+  <pre class="mermaid">{code.trim()}</pre>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .mermaid-figure {
+    margin: 1.75rem 0;
+    text-align: center;
+  }
+  .mermaid-figure :global(pre.mermaid) {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 1rem;
+    overflow-x: auto;
+    /* Hidden until Mermaid has rendered the SVG to avoid a flash of source. */
+    visibility: hidden;
+  }
+  .mermaid-figure :global(pre.mermaid[data-processed='true']) {
+    visibility: visible;
+  }
+  .mermaid-figure figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-faint);
+  }
+</style>
+
+<script>
+  import mermaid from 'mermaid';
+
+  function currentTheme(): 'dark' | 'default' {
+    return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default';
+  }
+
+  async function renderMermaid() {
+    const nodes = Array.from(
+      document.querySelectorAll<HTMLElement>('pre.mermaid')
+    );
+    if (nodes.length === 0) return;
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: currentTheme(),
+      fontFamily: 'inherit',
+    });
+
+    for (const node of nodes) {
+      // Preserve the original source so we can re-render on theme change.
+      if (!node.dataset.src) node.dataset.src = node.textContent ?? '';
+      node.removeAttribute('data-processed');
+      node.textContent = node.dataset.src;
+    }
+
+    try {
+      await mermaid.run({ nodes });
+    } catch (err) {
+      console.error('Mermaid render failed:', err);
+      // Don't leave diagrams permanently hidden; fall back to showing source.
+      for (const node of nodes) {
+        if (node.getAttribute('data-processed') !== 'true') {
+          node.style.visibility = 'visible';
+        }
+      }
+    }
+  }
+
+  renderMermaid();
+  document.addEventListener('theme-change', renderMermaid);
+</script>

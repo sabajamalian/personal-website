@@ -1,0 +1,91 @@
+---
+title: 'Anatomy of an Agentic Coding Session'
+description: 'What actually happens when an AI coding agent plans, edits, and verifies a change, and how to shape that loop with a repo instructions file.'
+pubDate: 2026-07-01
+tags: ['GitHub Copilot', 'Agentic SDLC', 'AI in Software Development']
+---
+
+Autocomplete predicts the next token. An *agent* runs a loop: it plans, calls
+tools (read files, run commands, edit code), observes the results, and repeats
+until the task is done or it gets stuck. The difference is the loop.
+
+This post is a quick tour of that loop, using the same setup that builds this
+blog.
+
+## The loop
+
+<Mermaid
+  caption="The plan-act-verify loop most coding agents run."
+  code={`
+flowchart TD
+  A[Task] --> B[Plan]
+  B --> C[Act: read / edit / run]
+  C --> D[Observe output]
+  D --> E{Done and verified?}
+  E -->|no| B
+  E -->|yes| F[Summarize + hand off]
+`}
+/>
+
+The key property: every "Act" step produces output the agent must read before
+the next step. A failing test isn't a dead end, it's the observation that drives
+the next plan.
+
+## Autocomplete vs. agent
+
+| Dimension        | Autocomplete            | Agent                          |
+| ---------------- | ----------------------- | ------------------------------ |
+| Unit of work     | A line or block         | A whole task                   |
+| Context          | Open file + neighbors   | Whole repo, tools, command output |
+| Feedback         | You accept or reject    | It runs tests and self-corrects |
+| Failure mode     | Wrong suggestion        | Wrong plan (more expensive)    |
+
+<Callout type="important" title="The expensive failure moved">
+  With autocomplete, a bad suggestion costs you a keystroke. With an agent, a bad
+  *plan* can cost a dozen tool calls. That's why steering the plan early matters
+  more than reviewing the final diff.
+</Callout>
+
+## Steering the agent with a repo instructions file
+
+The highest-leverage file in an agentic repo is
+[`.github/copilot-instructions.md`](https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot).
+It's loaded automatically and tells every session the conventions before it
+writes a line of code:
+
+```markdown
+# Project: saba.codes
+
+- Static Astro + MDX blog. Posts live in `src/content/blog/*.mdx`.
+- To add a post, copy `_template.mdx`; never hand-edit the build output in `dist/`.
+- Prefer code, diagrams, and links over prose.
+- Verify with `npm run build` before finishing.
+```
+
+That last line matters: it turns "I think this works" into "the build passed."
+
+## Verification is the whole game
+
+An agent's edits are only as trustworthy as the check that follows them. A
+minimal but real verification step for this site:
+
+```bash
+npm run build            # type-check content collections + compile
+npm run preview          # serve dist/ and click through
+```
+
+<Callout type="tip" title="Give the agent a way to be wrong safely">
+  Fast, deterministic checks (build, lint, unit tests) let the agent iterate
+  without you in the loop. The better your checks, the more you can delegate.
+</Callout>
+
+## Where this is going
+
+The interesting shift in the [agentic SDLC](https://github.blog/ai-and-ml/github-copilot/)
+isn't that agents write code. It's that the developer's job moves up a level:
+from writing every line to specifying intent, shaping constraints, and reviewing
+outcomes. The instructions file, the test suite, and the plan become the
+interface.
+
+More on each of those in future posts. This one was written, built, and verified
+in exactly the loop it describes.

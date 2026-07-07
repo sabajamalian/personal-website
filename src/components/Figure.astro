@@ -1,0 +1,38 @@
+---
+/**
+ * Captioned figure for images and diagrams.
+ * Usage in MDX: <Figure src="/assets/diagram.webp" alt="..." caption="Fig 1. ..." />
+ * `src` may be a /public path or an external URL.
+ */
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+}
+const { src, alt, caption, width, height } = Astro.props;
+---
+
+<figure class="figure">
+  <img src={src} alt={alt} width={width} height={height} loading="lazy" decoding="async" />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .figure {
+    margin: 1.75rem 0;
+    text-align: center;
+  }
+  .figure img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-faint);
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Bio from '../components/Bio.astro';
+import PostCard from '../components/PostCard.astro';
+import { sortPosts } from '../lib/utils';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+const posts = sortPosts(await getCollection('blog'));
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <Bio />
+
+  <section class="posts">
+    <div class="posts-head">
+      <h2>Writing</h2>
+      <a href="/tags/" class="posts-head-link">Browse by tag</a>
+    </div>
+
+    {
+      posts.length === 0 ? (
+        <p class="empty">No posts published yet. Check back soon.</p>
+      ) : (
+        <div class="post-list">
+          {posts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .posts {
+    margin-top: 1rem;
+  }
+  .posts-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+  .posts-head h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+  }
+  .posts-head-link {
+    font-size: 0.85rem;
+  }
+  .post-list {
+    border-bottom: 1px solid var(--border);
+  }
+  .empty {
+    color: var(--text-muted);
+    padding: 2rem 0;
+  }
+</style>

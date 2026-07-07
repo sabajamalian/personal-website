@@ -1,0 +1,58 @@
+---
+# Copy this file to a new name (e.g. my-post-title.mdx) to start a post.
+# Files beginning with "_" are ignored by the build.
+title: 'Your post title'
+description: 'One or two sentences shown on the home page, in search results, and in the RSS feed.'
+pubDate: 2026-01-01
+# updatedDate: 2026-01-15   # optional
+tags: ['GitHub Copilot', 'Agentic SDLC']
+# heroImage: ./hero.png      # optional; a relative image import, optimized at build
+# heroAlt: 'Describe the hero image'
+draft: true                  # set to false to publish
+---
+
+Write a short lead paragraph. Keep prose tight. Favor code, examples, links,
+and diagrams over long text.
+
+## A section with code
+
+Fenced code blocks are syntax-highlighted automatically:
+
+```ts
+export function greet(name: string): string {
+  return `Hello, ${name}`;
+}
+```
+
+## Callouts
+
+<Callout type="tip" title="Pro tip">
+  Use callouts for asides. Types: `note`, `tip`, `warning`, `important`.
+</Callout>
+
+## Diagrams (Mermaid)
+
+Pass the diagram as a template literal so indentation and arrows are preserved:
+
+<Mermaid
+  caption="A minimal flow"
+  code={`
+flowchart LR
+  A[Input] --> B{Decision}
+  B -->|yes| C[Do the thing]
+  B -->|no| D[Stop]
+`}
+/>
+
+## Images
+
+<Figure
+  src="/assets/example.png"
+  alt="Describe the image"
+  caption="Optional caption"
+/>
+
+## Links
+
+Be link-heavy. Reference [primary sources](https://docs.github.com/copilot)
+directly rather than paraphrasing them.
