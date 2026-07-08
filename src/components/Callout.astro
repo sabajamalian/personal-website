@@ -1,0 +1,65 @@
+---
+/**
+ * Callout / admonition box for notes, tips, warnings, and important asides.
+ * Usage in MDX: <Callout type="tip" title="Pro tip">...</Callout>
+ * Types: note (default) | tip | warning | important
+ */
+interface Props {
+  type?: 'note' | 'tip' | 'warning' | 'important';
+  title?: string;
+}
+const { type = 'note', title } = Astro.props;
+const defaultLabels: Record<string, string> = {
+  note: 'Note',
+  tip: 'Tip',
+  warning: 'Warning',
+  important: 'Important',
+};
+const label = title ?? defaultLabels[type] ?? 'Note';
+---
+
+<aside class={`callout callout-${type}`}>
+  <p class="callout-label">{label}</p>
+  <div class="callout-body"><slot /></div>
+</aside>
+
+<style>
+  .callout {
+    --callout-color: var(--accent);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--callout-color);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    background: color-mix(in srgb, var(--callout-color) 8%, var(--surface));
+    margin: 1.5rem 0;
+  }
+  .callout-note {
+    --callout-color: #4a9eff;
+  }
+  .callout-tip {
+    --callout-color: #2ea043;
+  }
+  .callout-warning {
+    --callout-color: #d29922;
+  }
+  .callout-important {
+    --callout-color: #a371f7;
+  }
+  .callout-label {
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--callout-color);
+    margin-bottom: 0.35rem;
+  }
+  .callout-body :global(> :first-child) {
+    margin-top: 0;
+  }
+  .callout-body :global(> :last-child) {
+    margin-bottom: 0;
+  }
+  .callout-body :global(> * + *) {
+    margin-top: 0.75rem;
+  }
+</style>

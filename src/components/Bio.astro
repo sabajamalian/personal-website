@@ -1,0 +1,85 @@
+---
+import { AUTHOR, SOCIALS } from '../consts';
+import Icon from './Icon.astro';
+---
+
+<section class="bio">
+  <img
+    src={AUTHOR.avatar}
+    alt={AUTHOR.name}
+    class="bio-avatar"
+    width="64"
+    height="64"
+    loading="eager"
+  />
+  <div class="bio-text">
+    <h1 class="bio-name">{AUTHOR.name}</h1>
+    <p class="bio-desc">{AUTHOR.bio}</p>
+  </div>
+  <nav class="bio-socials" aria-label="Social links">
+    {
+      SOCIALS.map((s) => (
+        <a
+          href={s.href}
+          target="_blank"
+          rel="me noopener"
+          class="bio-social"
+          aria-label={s.label}
+          title={s.label}
+        >
+          <Icon name={s.icon} size={18} />
+        </a>
+      ))
+    }
+  </nav>
+</section>
+
+<style>
+  .bio {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2.5rem 0 2rem;
+  }
+  .bio-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .bio-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .bio-name {
+    font-size: 1.35rem;
+    margin-bottom: 0.1rem;
+  }
+  .bio-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+  .bio-socials {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+  .bio-social {
+    color: var(--text-faint);
+    display: inline-flex;
+  }
+  .bio-social:hover {
+    color: var(--accent);
+  }
+  @media (max-width: 480px) {
+    .bio {
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+    .bio-socials {
+      width: 100%;
+    }
+  }
+</style>

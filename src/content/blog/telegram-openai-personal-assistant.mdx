@@ -1,0 +1,101 @@
+---
+title: 'A Personal Assistant with a Telegram Bot and OpenAI'
+description: 'Why voice assistants still feel stuck in 2015, and a small project that wires Telegram voice messages to OpenAI for open-ended, actionable commands.'
+pubDate: 2024-03-01
+tags: ['AI', 'OpenAI', 'Side Projects']
+---
+
+After using Alexa and Google Assistant for several years, I noticed about 90% of
+my interactions were always the same: ask for the weather, control some smart
+lights, or toss out the occasional random question. Useful, but only in a pretty
+limited way.
+
+With all the fast progress (sometimes too fast) in AI, especially tools like
+[ChatGPT](https://openai.com/chatgpt) that can hold a conversation, reason
+through tasks, and generate complex content, why do voice assistants still feel
+stuck in 2015?
+
+I don't have the full answer, but part of it is that general-purpose LLMs weren't
+built to control your smart home or manage daily tasks out of the box. They're
+designed for open-ended reasoning, not specific integrations. So I wired the two
+together: [Telegram](https://core.telegram.org/bots) for capture and delivery,
+OpenAI for understanding.
+
+## The flow
+
+<Mermaid
+  caption="A voice message round-trip: capture, understand, act, confirm."
+  code={`
+sequenceDiagram
+  participant U as User
+  participant T as Telegram Bot
+  participant O as OpenAI
+  participant S as Function Layer
+  U->>T: Voice message
+  T->>O: Transcribe + classify intent
+  O-->>T: Intent + arguments
+  T->>S: Execute matching function
+  S-->>T: Result
+  T-->>U: Confirmation
+`}
+/>
+
+Broken down, it is four steps:
+
+1. The user sends a voice message through Telegram.
+2. OpenAI transcribes it and extracts the intent and any required arguments.
+3. The system executes the matching function for that command.
+4. A confirmation is sent back to the user through Telegram.
+
+## Intent to action
+
+The interesting part is step 3. Instead of brittle keyword matching, the model
+returns a structured intent that maps cleanly onto a function. Illustrative
+sketch:
+
+```python
+TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "set_light",
+            "description": "Turn a smart light on or off",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "room": {"type": "string"},
+                    "state": {"type": "string", "enum": ["on", "off"]},
+                },
+                "required": ["room", "state"],
+            },
+        },
+    },
+]
+
+# "turn off the kitchen lights" -> {"room": "kitchen", "state": "off"}
+completion = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": transcript}],
+    tools=TOOLS,
+)
+```
+
+<Callout type="note" title="Why this beats keyword matching">
+  The model handles paraphrases ("kill the kitchen lights", "kitchen off",
+  "lights out in the kitchen") without a growing pile of `if` statements. New
+  capabilities are just new tool definitions.
+</Callout>
+
+## The original sketch
+
+Here's the first architecture diagram I drew for it:
+
+<Figure
+  src="/assets/assistant-diagram.webp"
+  alt="System architecture: Telegram bot connected to OpenAI and a function execution layer"
+  caption="First-pass architecture for the assistant."
+/>
+
+The takeaway: the assistants shipped in 2015 were limited by their intent
+systems, not their microphones. Swap the intent layer for an LLM and the same
+hardware suddenly feels a decade newer.

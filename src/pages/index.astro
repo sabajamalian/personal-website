@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Bio from '../components/Bio.astro';
+import PostCard from '../components/PostCard.astro';
+import { sortPosts } from '../lib/utils';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+const posts = sortPosts(await getCollection('blog'));
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <Bio />
+
+  <section class="posts">
+    {
+      posts.length === 0 ? (
+        <p class="empty">No posts published yet. Check back soon.</p>
+      ) : (
+        <div class="post-list">
+          {posts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .posts {
+    margin-top: 0.5rem;
+  }
+  .post-list {
+    border-bottom: 1px solid var(--border);
+  }
+  .empty {
+    color: var(--text-muted);
+    padding: 2rem 0;
+  }
+</style>

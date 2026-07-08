@@ -1,0 +1,75 @@
+---
+import Icon from './Icon.astro';
+---
+<button
+  id="theme-toggle"
+  class="theme-toggle"
+  type="button"
+  aria-label="Toggle color theme"
+  title="Toggle light / dark theme"
+>
+  <span class="icon-sun"><Icon name="sun" size={18} /></span>
+  <span class="icon-moon"><Icon name="moon" size={18} /></span>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  :global(:root[data-theme='dark']) .icon-moon {
+    display: none;
+  }
+  :global(:root[data-theme='light']) .icon-sun {
+    display: none;
+  }
+  .icon-sun,
+  .icon-moon {
+    display: inline-flex;
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('theme-toggle');
+
+  function syncButton() {
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    btn?.setAttribute('aria-pressed', String(isDark));
+    btn?.setAttribute(
+      'aria-label',
+      isDark ? 'Switch to light theme' : 'Switch to dark theme'
+    );
+  }
+
+  function applyTheme(theme: string) {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      /* storage unavailable */
+    }
+    syncButton();
+    document.dispatchEvent(new CustomEvent('theme-change', { detail: theme }));
+  }
+
+  btn?.addEventListener('click', () => {
+    const current =
+      document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  syncButton();
+</script>

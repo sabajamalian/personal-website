@@ -1,0 +1,62 @@
+---
+import { SOCIALS, SITE_TITLE } from '../consts';
+import Icon from './Icon.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-socials">
+      {
+        SOCIALS.map((s) => (
+          <a
+            href={s.href}
+            target="_blank"
+            rel="me noopener"
+            aria-label={s.label}
+            title={s.label}
+          >
+            <Icon name={s.icon} size={18} />
+          </a>
+        ))
+      }
+      <a href="/rss.xml" aria-label="RSS feed" title="RSS feed">
+        <Icon name="rss" size={18} />
+      </a>
+    </div>
+    <p class="footer-copy">
+      &copy; {year} {SITE_TITLE} &middot; Built with <a href="https://astro.build">Astro</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+    padding: 2rem 0;
+  }
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+  .footer-socials {
+    display: flex;
+    gap: 1.1rem;
+  }
+  .footer-socials a {
+    color: var(--text-muted);
+    display: inline-flex;
+  }
+  .footer-socials a:hover {
+    color: var(--accent);
+  }
+  .footer-copy {
+    color: var(--text-faint);
+    font-size: 0.85rem;
+  }
+</style>
