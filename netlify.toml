@@ -5,6 +5,15 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Vanity redirects: map a slash path on saba.codes to an external subdomain.
+# To add another, copy the block below and change `from` and `to`.
+# These are non-forced (no `force = true`), so if a real static page ever
+# exists at the same path it takes precedence over the redirect.
+[[redirects]]
+  from = "/planner"
+  to = "https://planner.saba.codes"
+  status = 301
+
 # Astro outputs static assets with hashed filenames; cache them aggressively.
 [[headers]]
   for = "/_astro/*"
