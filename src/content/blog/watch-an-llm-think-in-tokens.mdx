@@ -1,152 +1,121 @@
 ---
-title: 'Watch an LLM Think in Tokens (and Why Your Copilot Context Should Stay Small)'
-description: 'Token-Insight Chat colors every token by the model’s confidence and shows the alternatives it almost picked. The same mechanics explain why your Copilot context should stay small, fresh, and focused.'
+title: 'How an LLM Picks Each Token, Read Through OpenAI logprobs'
+description: 'Next-token generation is sampling from a probability distribution. OpenAI logprobs let you read that distribution directly, which also explains why the context you give Copilot matters so much.'
 pubDate: 2026-07-08
-tags: ['GitHub Copilot', 'Context Engineering', 'AI in Software Development', 'LLMs']
+tags: ['GitHub Copilot', 'LLMs', 'AI in Software Development', 'Context Engineering']
 draft: true
 ---
 
-An LLM always sounds sure of itself, even when it's guessing. **Token-Insight Chat** colors in the doubt: every word the model writes is shaded by how confident it was, and you can see the runner-up words it almost wrote instead. Try it at [saba.codes/llm-probs](https://saba.codes/llm-probs).
+A language model generates text one token at a time. At each step it computes a probability distribution over its entire vocabulary, selects one token from it, appends it, and repeats. The fluent paragraph you read is the trace of thousands of these draws. OpenAI's [`logprobs`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-logprobs) option exposes the distribution at each step, so instead of inferring the model's certainty from confident-sounding prose, you can read it off the numbers.
 
-## What it shows
+This post walks through that mechanism, then follows one consequence: because every token is conditioned on the whole context window, what you put in that window is what shapes the distribution. For anyone driving GitHub Copilot, that is the part worth understanding.
 
-- **Output confidence.** Each token is color-graded by its probability. Green is high probability, red is low.
-- **Alternatives.** Hover a token to see the other tokens the model considered at that spot, each with its own percentage. Click one to swap it in and regenerate the rest.
-- **Input influence.** Every word you typed is scored by how much removing it changes the model's next move, drawn as a heatmap.
+## One token, one distribution
 
-<Callout type="note" title="Bring your own key">
-  It's a public, no-login app. You paste your own OpenAI key (stored only in your browser), so usage bills to your account. No shared key, nothing saved on the server.
-</Callout>
-
-> **Screenshot:** a chat reply with per-token confidence colors and inline percentages.
-
-## Where the colors come from
-
-Ask OpenAI for [`logprobs`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-logprobs) and it returns the log-probability behind every token it picks.
+Ask the Chat Completions API for `logprobs` and every generated token comes back with its log-probability.
 
 ```ts
 const res = await client.chat.completions.create({
   model: "gpt-4o-mini",
   messages: [{ role: "user", content: "Name the capital of Australia." }],
   logprobs: true,
-  top_logprobs: 5, // also return the 5 runner-up tokens at each step
+  top_logprobs: 5, // also return the 5 highest-scoring tokens at each step
 });
 ```
 
-Each token comes back with its score and the alternatives:
+A log-probability is the natural log of a probability, so the values are negative and closer to zero means more likely. Exponentiate to recover the probability:
+
+```ts
+const prob = Math.exp(-0.0004); // 0.9996, about 99.96%
+```
+
+A token with `logprob` near `0` was nearly certain at that position; one at `-2.30` carried about 10% (`exp(-2.30) = 0.10`).
+
+## The rest of the distribution
+
+`top_logprobs` returns the highest-scoring tokens the model weighed at each step, not just the one it emitted. This is the head of the distribution, truncated to the `k` you request (max 20).
 
 ```jsonc
 // res.choices[0].logprobs.content[i]
 {
   "token": " Canberra",
-  "logprob": -0.0004,        // natural log of the probability
+  "logprob": -0.0004,
   "top_logprobs": [
     { "token": " Canberra", "logprob": -0.0004 },
     { "token": " Sydney",   "logprob": -8.11 },
     { "token": " The",      "logprob": -9.02 }
-    // ...5 requested; only the head shown, and these never sum to 100%
+    // truncated to k; the omitted tail still holds probability mass
   ]
 }
 ```
 
-Exponentiate the logprob and you get that token's probability given the text so far. That number drives the color.
+When the top token holds most of the mass, the model was confident. When the top few are close, it was genuinely undecided, and the single emitted token hides that. Reading the distribution is the difference between "the model said X" and "the model weighed X at 55 percent against Y at 40 percent."
 
-```ts
-const prob = Math.exp(token.logprob); // -0.0004 -> 0.9996  (99.96%)
-```
+> **Screenshot:** a generated sentence with each token shaded by its probability, so a low-probability token stands out from the confident ones.
 
-## Meaning is geometry
+The figures here come from a small visualizer I wrote at [saba.codes/llm-probs](https://saba.codes/llm-probs) that renders these same API values.
 
-Before a model predicts anything, it turns each token into a vector. Similar meanings land close together, so the space clusters on its own: fruit here, code there, music over there.
+## Where the distribution comes from
+
+Two mechanisms set that distribution.
+
+First, embeddings. Every token maps to a vector, and training places related meanings near each other, so the space clusters by learned similarity.
 
 <Figure
   src="/assets/llm-token-embeddings.png"
   alt="A 3D scatter plot of words grouped into colored clusters: fruits, code terms, machine-learning terms, music, animals, nature, and food."
-  caption="Words as vectors. Closeness means similar meaning."
+  caption="Token embeddings projected to 3D. Proximity reflects learned similarity."
 />
 
-## Context decides which "apple"
+Second, attention. That embedding is only a starting point. Through the model's layers, attention rewrites each position's representation as a function of the surrounding tokens. This is why the same token behaves differently in different sentences: "I bit into the apple" and "Apple shipped a new" pull the representation, and therefore the next-token distribution, in different directions. The distribution at each step is conditioned on the full sequence so far.
 
-On that map, `apple` sits with the fruit, but that map is only the starting point. Inside the model, attention layers shift each token's representation based on its neighbors: "I bit into the apple" leans fruit, "Apple shipped a new" leans company. Same token, different neighbors, different next token.
+## Measuring what the context did
 
-> **Screenshot:** two replies to "apple" prompts, side by side. Fruit context predicts juicy/crisp; company context predicts Mac/products.
-
-## It's just a next-token predictor
-
-That's the whole engine. At every position the model samples from a distribution, and `top_logprobs` lets you peek at the top of that distribution.
+If the distribution is conditioned on the input, you can measure how much any single input token contributed: remove it, recompute the distribution, and see how far it moved. A standard measure of distance between two distributions is the Jensen-Shannon divergence.
 
 ```ts
-// The top tokens the model weighed for one slot, as percentages.
-token.top_logprobs.map(a => ({
-  token: a.token,
-  prob: (Math.exp(a.logprob) * 100).toFixed(1) + "%",
-}));
-```
-
-> **Screenshot:** the hover popover on a mid-confidence token, listing its alternatives.
-
-## One token changes everything after it
-
-Click a token, swap it for an alternative, and the model regenerates the tail from that point. Change `autumn` to `spring` and the reason that follows rewrites itself. One token upstream reshapes everything downstream.
-
-> **Screenshot:** before and after a token swap, showing the rewritten sentence.
-
-Same reason one wrong turn, or one stale file, early in a session bends everything the agent does after it.
-
-## Which of your words moved it
-
-Flip it around: which of your input words actually steered the answer? Drop each word, re-ask, and measure how far the next-token distribution shifts.
-
-```ts
-// Leave-one-out: a bigger shift means the word mattered more.
+// Leave-one-out attribution over the first predicted token.
+// Distributions are built from the visible top_logprobs head, so scores
+// are approximate: the truncated tail is treated as zero mass.
 const base = firstTokenDistribution(prompt);
 for (const word of words(prompt)) {
-  const dropped = firstTokenDistribution(remove(word, prompt));
-  word.score = jensenShannon(base, dropped); // 0 = no effect
+  const perturbed = firstTokenDistribution(remove(word, prompt));
+  word.score = jensenShannon(base, perturbed); // 0 = removing it changed nothing
 }
 ```
 
-> **Screenshot:** the input heatmap, with the high-influence words lit up.
+Tokens with a high score are the ones the model was leaning on. Computed over the visible head of the distribution, this is a proxy for next-token sensitivity, not full-answer attribution. In practice a few input tokens usually carry most of the signal while the rest barely move the distribution.
 
-## The context window is the real prompt
+> **Screenshot:** the input heatmap, where the high-influence words are darker than the filler around them.
 
-A coding agent is the same next-token predictor with a much bigger set of neighbors. Everything in its context window is the "words around apple," steering every line it writes.
+## Scaling up to Copilot
+
+A coding agent is the same conditional sampler with a larger conditioning set. Its context window holds your prompt, the repo files it has read, tool and command output, and the running conversation. Every token it writes is drawn from a distribution conditioned on all of it.
 
 <Mermaid
-  caption="Everything in the window conditions the next token, and the next line of code."
+  caption="The context window is the conditioning set for the next token, and the next line of code."
   code={`
 flowchart LR
   A[Your prompt] --> W[Context window]
   B[Repo files in context] --> W
   C[Tool and command output] --> W
-  D[Earlier chat turns] --> W
-  W --> N[Next token / next action]
+  D[Earlier conversation] --> W
+  W --> N[Next-token distribution]
 `}
 />
 
-The token demo and the agent are one idea at two zoom levels:
+Three consequences follow directly from that conditioning.
 
-| At the token level | In an agent |
-| --- | --- |
-| `apple` = fruit or company | `Button` = your design system or a plain HTML tag |
-| Neighboring words pick the meaning | The files in context pick the answer |
-| A high-probability token can still be wrong | A confident, hallucinated API call |
-| Swapping one token rewrites the tail | One stale file bends every edit that follows |
+- **A long session keeps conditioning on tokens you have moved past.** Superseded instructions and abandoned attempts remain in the window and keep pulling the distribution. A fresh session for a new task resets the conditioning set to what is relevant.
+- **Verbose input adds low-signal tokens.** The leave-one-out view shows most words contribute little; padding a request spreads the distribution instead of sharpening it. Terse, specific prompts condition on higher signal.
+- **Irrelevant files compete.** A wrong or stale file in context is part of the conditioning set, so it shifts predictions toward itself. Scoping context to the files that matter keeps the distribution on target.
 
-## So keep the window small
+None of this makes the model smarter. It changes what the model is conditioned on, which is the lever you actually hold.
 
-You don't make an agent smarter by giving it more. You make it smarter by giving it the right context, and only the right context.
-
-- **Start fresh often.** A long session drags every old, abandoned turn into the window, where it still votes on the next token. New task, new session.
-- **Prompt tight.** Extra words are extra neighbors. Keyword-dense beats polite and padded. Caveman-style prompting is a feature, not laziness.
-- **Control what it sees.** Point it at the two files that matter, not the whole repo. The wrong file sitting next to your request competes to be the answer.
-
-<Callout type="warning" title="Confidence isn't correctness">
-  A bright green token means the model is sure, not right. It can be confidently wrong, at the token level and at the agent level. Low confidence is a "check this" signal; high confidence is not proof. Always run the tests.
+<Callout type="note" title="Confidence is not correctness">
+  A high probability means training and context made a token likely, not that it is true. Models are confidently wrong all the time. A low-probability token is a useful signal to verify; a high-probability one is only the model's own certainty.
 </Callout>
 
-## The one idea
+## Summary
 
-What surrounds a token decides the next token. What surrounds your request decides the next line of code. The model is fixed; the window is yours. Keep it small, fresh, and relevant.
-
-Play with it at [saba.codes/llm-probs](https://saba.codes/llm-probs).
+An LLM is a conditional next-token sampler. `logprobs` lets you read the distribution it samples from, `top_logprobs` shows the alternatives it weighed, and leave-one-out shows which input tokens shaped it. Scaled up to Copilot, the context window is that conditioning set, and keeping it small, fresh, and relevant is how you control the distribution the next line of code is drawn from.
