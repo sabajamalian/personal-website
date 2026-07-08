@@ -3,12 +3,12 @@ title: 'How an LLM Picks Each Token, Read Through OpenAI logprobs'
 description: 'Next-token generation is sampling from a probability distribution. OpenAI logprobs let you read that distribution directly, which also explains why the context you give Copilot matters so much.'
 pubDate: 2026-07-08
 tags: ['GitHub Copilot', 'LLMs', 'AI in Software Development', 'Context Engineering']
-draft: true
+draft: false
 ---
 
 A language model generates text one token at a time. At each step it computes a probability distribution over its entire vocabulary, selects one token from it, appends it, and repeats. The fluent paragraph you read is the trace of thousands of these draws. OpenAI's [`logprobs`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-logprobs) option exposes the distribution at each step, so instead of inferring the model's certainty from confident-sounding prose, you can read it off the numbers.
 
-This post walks through that mechanism, then follows one consequence: because every token is conditioned on the whole context window, what you put in that window is what shapes the distribution. For anyone driving GitHub Copilot, that is the part worth understanding.
+Now here I'd like to use the data and make a point: because every token is conditioned on the whole context window, what you put in that window is what shapes the distribution. For developers using tools such as GitHub Copilot, that is the part worth understanding.
 
 ## One token, one distribution
 
@@ -31,8 +31,6 @@ const prob = Math.exp(-0.0004); // 0.9996, about 99.96%
 
 A token with `logprob` near `0` was nearly certain at that position; one at `-2.30` carried about 10% (`exp(-2.30) = 0.10`).
 
-## The rest of the distribution
-
 `top_logprobs` returns the highest-scoring tokens the model weighed at each step, not just the one it emitted. This is the head of the distribution, truncated to the `k` you request (max 20).
 
 ```jsonc
@@ -51,11 +49,13 @@ A token with `logprob` near `0` was nearly certain at that position; one at `-2.
 
 When the top token holds most of the mass, the model was confident. When the top few are close, it was genuinely undecided, and the single emitted token hides that. Reading the distribution is the difference between "the model said X" and "the model weighed X at 55 percent against Y at 40 percent."
 
-> **Screenshot:** a generated sentence with each token shaded by its probability, so a low-probability token stands out from the confident ones.
+<Figure
+  src="/assets/llm-probs-tokens.png"
+  alt="A model reply with each output token shaded by its probability, green for high and red for low, an open popover listing alternative tokens with their percentages, and the input message above scored as an influence heatmap."
+  caption="Each output token shaded by its probability. Hovering a token reveals the alternatives the model weighed at that position."
+/>
 
-The figures here come from a small visualizer I wrote at [saba.codes/llm-probs](https://saba.codes/llm-probs) that renders these same API values.
-
-## Where the distribution comes from
+The figures here come from a small visualizer I ~~built~~ vibed at [saba.codes/llm-probs](https://saba.codes/llm-probs) that renders these same API values.
 
 Two mechanisms set that distribution.
 
@@ -86,9 +86,14 @@ for (const word of words(prompt)) {
 
 Tokens with a high score are the ones the model was leaning on. Computed over the visible head of the distribution, this is a proxy for next-token sensitivity, not full-answer attribution. In practice a few input tokens usually carry most of the signal while the rest barely move the distribution.
 
-> **Screenshot:** the input heatmap, where the high-influence words are darker than the filler around them.
+<Video
+  src="/assets/llm-probs-token-swap.mp4"
+  caption="The input message is scored as an influence heatmap (top). Clicking an output token lists the alternatives the model weighed there; picking one regenerates the continuation from that point."
+  width={1184}
+  height={768}
+/>
 
-## Scaling up to Copilot
+## Scaling up to Coding Agents
 
 A coding agent is the same conditional sampler with a larger conditioning set. Its context window holds your prompt, the repo files it has read, tool and command output, and the running conversation. Every token it writes is drawn from a distribution conditioned on all of it.
 
