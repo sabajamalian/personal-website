@@ -1,8 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from './FormattedDate.astro';
-import Icon from './Icon.astro';
-import { postUrl, slugifyTag } from '../lib/utils';
+import { postUrl } from '../lib/utils';
 
 interface Props {
   post: CollectionEntry<'blog'>;
@@ -11,88 +10,46 @@ const { post } = Astro.props;
 const { data, id } = post;
 ---
 
-<article class="post-card">
-  <div class="post-card-main">
-    <h2 class="post-card-title">
-      <a href={postUrl(id)}>{data.title}</a>
-    </h2>
-    <p class="post-card-desc">{data.description}</p>
-    <div class="post-card-meta">
-      <span class="meta-item">
-        <Icon name="calendar" size={13} />
-        <FormattedDate date={data.pubDate} />
-      </span>
-      {
-        data.tags.length > 0 && (
-          <span class="post-card-tags">
-            {data.tags.map((t) => (
-              <a class="tag" href={`/tags/${slugifyTag(t)}/`}>
-                #{t}
-              </a>
-            ))}
-          </span>
-        )
-      }
-    </div>
+<a href={postUrl(id)} class="post-card">
+  <div class="post-card-head">
+    <h2 class="post-card-title">{data.title}</h2>
+    <span class="post-card-date"><FormattedDate date={data.pubDate} /></span>
   </div>
-  <a href={postUrl(id)} class="post-card-arrow" aria-label={`Read ${data.title}`}>
-    <Icon name="arrow-right" size={18} />
-  </a>
-</article>
+  <p class="post-card-desc">{data.description}</p>
+</a>
 
 <style>
   .post-card {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    display: block;
     padding: 1.25rem 0;
     border-top: 1px solid var(--border);
-  }
-  .post-card-main {
-    flex: 1;
-    min-width: 0;
-  }
-  .post-card-title {
-    font-size: 1.2rem;
-    margin-bottom: 0.3rem;
-  }
-  .post-card-title a {
     color: var(--text);
   }
-  .post-card-title a:hover {
-    color: var(--accent);
+  .post-card:hover {
     text-decoration: none;
+  }
+  .post-card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .post-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .post-card:hover .post-card-title {
+    color: var(--accent);
+  }
+  .post-card-date {
+    color: var(--text-faint);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .post-card-desc {
     color: var(--text-muted);
     font-size: 0.92rem;
-    margin-bottom: 0.6rem;
-  }
-  .post-card-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 1rem;
-    font-size: 0.8rem;
-    color: var(--text-faint);
-  }
-  .meta-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-  .post-card-tags {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .post-card-arrow {
-    color: var(--text-faint);
-    flex-shrink: 0;
-    transition: transform var(--transition), color var(--transition);
-  }
-  .post-card:hover .post-card-arrow {
-    color: var(--accent);
-    transform: translateX(3px);
+    margin-top: 0.3rem;
   }
 </style>

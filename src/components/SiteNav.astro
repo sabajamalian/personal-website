@@ -2,9 +2,6 @@
 import { SITE_TITLE } from '../consts';
 import ThemeToggle from './ThemeToggle.astro';
 import Icon from './Icon.astro';
-
-const path = Astro.url.pathname;
-const isHome = path === '/';
 ---
 
 <header class="site-nav">
@@ -13,7 +10,6 @@ const isHome = path === '/';
       <span class="brand-prompt">~/</span>saba.codes
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a href="/" class:list={['nav-link', isHome && 'active']}>Home</a>
       <a
         href="/rss.xml"
         class="nav-link nav-icon"

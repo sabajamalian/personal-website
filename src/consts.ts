@@ -1,14 +1,11 @@
 export const SITE_TITLE = 'Saba Jamalian';
-export const SITE_DESCRIPTION =
-  'Code-first notes on GitHub, GitHub Copilot, AI, and the agentic software development lifecycle.';
+export const SITE_DESCRIPTION = 'I write about software.';
 export const SITE_URL = 'https://saba.codes';
 
 export const AUTHOR = {
   name: 'Saba Jamalian',
-  /** Short tagline shown under the name in the site header. */
-  tagline: 'GitHub, Copilot, AI, and the agentic SDLC',
-  /** Longer bio shown on the home page. */
-  bio: 'I write about GitHub, GitHub Copilot, and how AI agents are reshaping the software development lifecycle. Expect code, examples, links, and diagrams over long prose.',
+  /** One short line shown under the name on the home page. */
+  bio: 'I write about software.',
   avatar: '/assets/profile.jpg',
 };
 
