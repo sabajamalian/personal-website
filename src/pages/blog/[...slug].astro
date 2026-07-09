@@ -4,6 +4,7 @@ import PostLayout from '../../layouts/PostLayout.astro';
 import Callout from '../../components/Callout.astro';
 import Figure from '../../components/Figure.astro';
 import Mermaid from '../../components/Mermaid.astro';
+import Video from '../../components/Video.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -19,7 +20,7 @@ const { post } = Astro.props;
 const { Content, remarkPluginFrontmatter } = await render(post);
 
 // Components made available to MDX without per-file imports.
-const components = { Callout, Figure, Mermaid };
+const components = { Callout, Figure, Mermaid, Video };
 ---
 
 <PostLayout

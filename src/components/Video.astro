@@ -1,0 +1,51 @@
+---
+/**
+ * Captioned, self-hosted video for short demos and screen recordings.
+ * Usage in MDX: <Video src="/assets/demo.mp4" caption="..." />
+ * `src` may be a /public path or an external URL. Autoplays muted and loops,
+ * with controls, so it behaves like a lightweight animated figure.
+ */
+interface Props {
+  src: string;
+  caption?: string;
+  poster?: string;
+  width?: number;
+  height?: number;
+  ariaLabel?: string;
+}
+const { src, caption, poster, width, height, ariaLabel } = Astro.props;
+---
+
+<figure class="video-figure">
+  <video
+    src={src}
+    poster={poster}
+    width={width}
+    height={height}
+    aria-label={ariaLabel ?? caption}
+    autoplay
+    muted
+    loop
+    playsinline
+    controls
+    preload="metadata"></video>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .video-figure {
+    margin: 1.75rem 0;
+    text-align: center;
+  }
+  .video-figure video {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  .video-figure figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-faint);
+  }
+</style>

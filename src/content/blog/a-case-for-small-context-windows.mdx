@@ -1,0 +1,130 @@
+---
+title: 'A Case for Small Context Windows'
+description: 'Next-token generation is sampling from a probability distribution. Reading that distribution with OpenAI logprobs shows why a coding agent works better with a small, fresh, focused context window.'
+pubDate: 2026-07-08
+tags: ['GitHub Copilot', 'LLMs', 'AI in Software Development', 'Context Engineering']
+draft: false
+---
+
+A language model generates text one token at a time. At each step it computes a probability distribution over its entire vocabulary, selects one token from it, appends it, and repeats. The fluent paragraph you read is the trace of thousands of these draws. OpenAI's [`logprobs`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-logprobs) option exposes the distribution at each step, so instead of inferring the model's certainty from confident-sounding prose, you can read it off the numbers.
+
+Now here I'd like to use the data and make a point: because every token is conditioned on the whole context window, what you put in that window is what shapes the distribution. For developers using tools such as GitHub Copilot, that is the part worth understanding.
+
+## One token, one distribution
+
+Ask the Chat Completions API for `logprobs` and every generated token comes back with its log-probability.
+
+```ts
+const res = await client.chat.completions.create({
+  model: "gpt-4o-mini",
+  messages: [{ role: "user", content: "Name the capital of Australia." }],
+  logprobs: true,
+  top_logprobs: 5, // also return the 5 highest-scoring tokens at each step
+});
+```
+
+A log-probability is the natural log of a probability, so the values are negative and closer to zero means more likely. Exponentiate to recover the probability:
+
+```ts
+const prob = Math.exp(-0.0004); // 0.9996, about 99.96%
+```
+
+A token with `logprob` near `0` was nearly certain at that position; one at `-2.30` carried about 10% (`exp(-2.30) = 0.10`).
+
+`top_logprobs` returns the highest-scoring tokens the model weighed at each step, not just the one it emitted. This is the head of the distribution, truncated to the `k` you request (max 20).
+
+```jsonc
+// res.choices[0].logprobs.content[i]
+{
+  "token": " Canberra",
+  "logprob": -0.0004,
+  "top_logprobs": [
+    { "token": " Canberra", "logprob": -0.0004 },
+    { "token": " Sydney",   "logprob": -8.11 },
+    { "token": " The",      "logprob": -9.02 }
+    // truncated to k; the omitted tail still holds probability mass
+  ]
+}
+```
+
+When the top token holds most of the mass, the model was confident. When the top few are close, it was genuinely undecided, and the single emitted token hides that. Reading the distribution is the difference between "the model said X" and "the model weighed X at 55 percent against Y at 40 percent."
+
+<Figure
+  src="/assets/llm-probs-tokens.png"
+  alt="A model reply with each output token shaded by its probability, green for high and red for low, an open popover listing alternative tokens with their percentages, and the input message above scored as an influence heatmap."
+  caption="Each output token shaded by its probability. Hovering a token reveals the alternatives the model weighed at that position."
+/>
+
+The figures here come from a small visualizer I ~~built~~ vibed at [saba.codes/llm-probs](https://saba.codes/llm-probs) that renders these same API values.
+
+Two mechanisms set that distribution.
+
+First, embeddings. Every token maps to a vector, and training places related meanings near each other, so the space clusters by learned similarity.
+
+<Figure
+  src="/assets/llm-token-embeddings.png"
+  alt="A 3D scatter plot of words grouped into colored clusters: fruits, code terms, machine-learning terms, music, animals, nature, and food."
+  caption="Token embeddings projected to 3D. Proximity reflects learned similarity."
+/>
+
+Second, attention. That embedding is only a starting point. Through the model's layers, attention rewrites each position's representation as a function of the surrounding tokens. This is why the same token behaves differently in different sentences: "I bit into the apple" and "Apple shipped a new" pull the representation, and therefore the next-token distribution, in different directions. The distribution at each step is conditioned on the full sequence so far.
+
+## Measuring what the context did
+
+If the distribution is conditioned on the input, you can measure how much any single input token contributed: remove it, recompute the distribution, and see how far it moved. A standard measure of distance between two distributions is the Jensen-Shannon divergence.
+
+```ts
+// Leave-one-out attribution over the first predicted token.
+// Distributions are built from the visible top_logprobs head, so scores
+// are approximate: the truncated tail is treated as zero mass.
+const base = firstTokenDistribution(prompt);
+for (const word of words(prompt)) {
+  const perturbed = firstTokenDistribution(remove(word, prompt));
+  word.score = jensenShannon(base, perturbed); // 0 = removing it changed nothing
+}
+```
+
+Tokens with a high score are the ones the model was leaning on. Computed over the visible head of the distribution, this is a proxy for next-token sensitivity, not full-answer attribution. In practice a few input tokens usually carry most of the signal while the rest barely move the distribution.
+
+<Video
+  src="/assets/llm-probs-token-swap.mp4"
+  caption="The input message is scored as an influence heatmap (top). Clicking an output token lists the alternatives the model weighed there; picking one regenerates the continuation from that point."
+  width={1184}
+  height={768}
+/>
+
+## Scaling up to Coding Agents
+
+A coding agent is the same conditional sampler with a larger conditioning set. Its context window holds your prompt, the repo files it has read, tool and command output, and the running conversation. Every token it writes is drawn from a distribution conditioned on all of it.
+
+<Mermaid
+  caption="The context window is the conditioning set for the next token, and the next line of code."
+  code={`
+flowchart LR
+  A[Your prompt] --> W[Context window]
+  B[Repo files in context] --> W
+  C[Tool and command output] --> W
+  D[Earlier conversation] --> W
+  W --> N[Next-token distribution]
+`}
+/>
+
+Three consequences follow directly from that conditioning.
+
+- **A long session keeps conditioning on tokens you have moved past.** Superseded instructions and abandoned attempts remain in the window and keep pulling the distribution. A fresh session for a new task resets the conditioning set to what is relevant.
+- **Verbose input adds low-signal tokens.** The leave-one-out view shows most words contribute little; padding a request spreads the distribution instead of sharpening it. Terse, specific prompts condition on higher signal.
+- **Irrelevant files compete.** A wrong or stale file in context is part of the conditioning set, so it shifts predictions toward itself. Scoping context to the files that matter keeps the distribution on target.
+
+This degradation is measurable, not just theoretical: Chroma's [Context Rot](https://research.trychroma.com/context-rot) study found that across 18 models, performance drops as input length grows, even on deliberately simple tasks.
+
+And length itself is part of the cost, not only the irrelevant content: a controlled study, [Context Length Alone Hurts LLM Performance Despite Perfect Retrieval](https://aclanthology.org/2025.findings-emnlp.1264/) (Findings of EMNLP 2025), found models degrade as input grows even with perfect retrieval and the distractors stripped out. Their mitigation makes the point: have the model restate the few relevant pieces first, turning a long-context task back into a short one.
+
+None of this makes the model smarter. It changes what the model is conditioned on, which is the lever you actually hold.
+
+<Callout type="note" title="Confidence is not correctness">
+  A high probability means training and context made a token likely, not that it is true. Models are confidently wrong all the time. A low-probability token is a useful signal to verify; a high-probability one is only the model's own certainty.
+</Callout>
+
+## Summary
+
+An LLM is a conditional next-token sampler. `logprobs` lets you read the distribution it samples from, `top_logprobs` shows the alternatives it weighed, and leave-one-out shows which input tokens shaped it. Scaled up to Copilot, the context window is that conditioning set, and keeping it small, fresh, and relevant is how you control the distribution the next line of code is drawn from.
