@@ -117,6 +117,8 @@ Three consequences follow directly from that conditioning.
 
 This degradation is measurable, not just theoretical: Chroma's [Context Rot](https://research.trychroma.com/context-rot) study found that across 18 models, performance drops as input length grows, even on deliberately simple tasks.
 
+And length itself is part of the cost, not only the irrelevant content: a controlled study, [Context Length Alone Hurts LLM Performance Despite Perfect Retrieval](https://aclanthology.org/2025.findings-emnlp.1264/) (Findings of EMNLP 2025), found models degrade as input grows even with perfect retrieval and the distractors stripped out. Their mitigation makes the point: have the model restate the few relevant pieces first, turning a long-context task back into a short one.
+
 None of this makes the model smarter. It changes what the model is conditioned on, which is the lever you actually hold.
 
 <Callout type="note" title="Confidence is not correctness">
