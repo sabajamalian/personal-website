@@ -14,6 +14,11 @@
   to = "https://planner.saba.codes"
   status = 301
 
+[[redirects]]
+  from = "/llm-probs"
+  to = "https://llm-token-insights.apps.saba.codes/"
+  status = 301
+
 # Astro outputs static assets with hashed filenames; cache them aggressively.
 [[headers]]
   for = "/_astro/*"
