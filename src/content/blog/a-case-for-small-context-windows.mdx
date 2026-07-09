@@ -115,6 +115,8 @@ Three consequences follow directly from that conditioning.
 - **Verbose input adds low-signal tokens.** The leave-one-out view shows most words contribute little; padding a request spreads the distribution instead of sharpening it. Terse, specific prompts condition on higher signal.
 - **Irrelevant files compete.** A wrong or stale file in context is part of the conditioning set, so it shifts predictions toward itself. Scoping context to the files that matter keeps the distribution on target.
 
+This degradation is measurable, not just theoretical: Chroma's [Context Rot](https://www.trychroma.com/research/context-rot) study found that across 18 models, performance drops as input length grows, even on deliberately simple tasks.
+
 None of this makes the model smarter. It changes what the model is conditioned on, which is the lever you actually hold.
 
 <Callout type="note" title="Confidence is not correctness">
