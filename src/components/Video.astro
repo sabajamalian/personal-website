@@ -11,8 +11,9 @@ interface Props {
   poster?: string;
   width?: number;
   height?: number;
+  ariaLabel?: string;
 }
-const { src, caption, poster, width, height } = Astro.props;
+const { src, caption, poster, width, height, ariaLabel } = Astro.props;
 ---
 
 <figure class="video-figure">
