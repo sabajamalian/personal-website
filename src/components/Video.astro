@@ -22,6 +22,7 @@ const { src, caption, poster, width, height, ariaLabel } = Astro.props;
     poster={poster}
     width={width}
     height={height}
+    aria-label={ariaLabel ?? caption}
     autoplay
     muted
     loop
