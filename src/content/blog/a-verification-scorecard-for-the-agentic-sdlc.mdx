@@ -6,42 +6,38 @@ tags: ['Agentic SDLC', 'AI in Software Development', 'DORA', 'SRE']
 draft: false
 ---
 
-By 2026 the code part got fast. Teams leaning on AI agents merge
-[98% more pull requests](https://www.faros.ai/blog/ai-software-engineering) and
-finish more tasks than the teams that don't, and the generation problem is
-roughly solved. What almost nobody can show is that any of it made delivery
-better. In that same study of more than 10,000 developers, the team-level gains
-don't correlate with company-level throughput, DORA metrics, or quality. The
-individual wins just don't add up to an organizational one.
+By 2026, code generation stopped being the hard part. Teams that lean on AI agents
+merge [98% more pull requests](https://www.faros.ai/blog/ai-software-engineering)
+than teams that don't, and they finish more tasks doing it. The catch is that the
+gains stay stuck at the individual level. In that same study of more than 10,000
+developers, the extra output never showed up in company throughput, in DORA
+metrics, or in quality.
 
-They get absorbed somewhere, and it isn't a mystery where. When an agent opens
-three or four PRs before you've finished standup, the work doesn't vanish, it
-slides downstream to the one step nobody automated: deciding whether the change
-is safe to ship. Google's DORA team has a name for this in its April 2026
-[ROI of AI-Assisted Software Development](https://dora.dev/ai/roi/report/) report,
-the "verification tax," and a good line about what to do with it: "We don't
-measure AI by the code it writes but by the bottlenecks it clears."
+It's a plumbing problem. An agent can open three or four PRs in the time it takes
+to sit through standup, and every one of them still needs a person to decide
+whether it's safe to ship. Nobody automated that step, so it's where the backlog now
+collects. Google's DORA team calls the cost of it the "verification tax" in its
+April 2026 [ROI of AI-Assisted Software Development](https://dora.dev/ai/roi/report/)
+report, and its one-line summary of the shift is worth stealing: "We don't measure
+AI by the code it writes but by the bottlenecks it clears."
 
-That's what this post is about. What follows is a small verification scorecard you
-can build from GitHub and CI data. It ignores how much code you're shipping and
-watches the thing that actually went scarce: the capacity to trust a change enough
-to release it.
+This post takes that literally. It's a small verification scorecard you can
+assemble from GitHub and CI data, and it ignores how much code you ship on
+purpose. What it measures is how much it costs you to trust a change enough to
+release it.
 
 ## What DORA measures
 
-[DORA](https://dora.dev/guides/dora-metrics/) is five metrics in two groups.
-Throughput is change lead time, deployment frequency, and failed deployment
-recovery time. Instability is change fail rate and deployment rework rate.
-They're still the right backbone, and DORA hasn't abandoned them; its April 2026
-[ROI report](https://dora.dev/ai/roi/report/) leans on them heavily.
+[DORA](https://dora.dev/guides/dora-metrics/) tracks five metrics in two groups.
+Throughput covers change lead time, deployment frequency, and failed deployment
+recovery time. Instability covers change fail rate and deployment rework rate.
+They're still a solid backbone, and DORA leans on them heavily in that April 2026
+[ROI report](https://dora.dev/ai/roi/report/).
 
-The trouble is that two of them, deployment frequency and change lead time, get
-easy to run up once an agent is doing the typing. You can post big gains on both
-while the delivery you actually care about goes nowhere. That's not a hunch: in
-[Faros AI's study](https://www.faros.ai/blog/ai-software-engineering) of 10,000-plus
-developers, high-adoption teams merged 98% more PRs, and none of that team-level
-lift showed up in company throughput, DORA metrics, or quality. The dashboard
-number went up. The outcome didn't.
+Deployment frequency and change lead time are the easiest to inflate once an agent
+does the typing. Both can climb while the delivery you care about stays flat. That
+is what Faros AI found. Its high-adoption teams merged 98% more PRs, and none of
+that gain reached company throughput, DORA metrics, or quality.
 
 | DORA signal | What it leaned on | Why it misleads in 2026 | What to watch instead |
 | --- | --- | --- | --- |
@@ -51,33 +47,32 @@ number went up. The outcome didn't.
 
 ## The bottleneck moved
 
-So where did the work go? To review. This is the most consistent finding in the
-recent data, and it shows up from several directions at once:
+The extra work lands in review, and the recent numbers agree on it from a few
+directions at once:
 
-- Alongside those extra PRs,
-  [Faros AI](https://www.faros.ai/blog/ai-software-engineering) measured review
-  time per PR up **91%**, average **PR size up 154%**, and bugs up about 9% per
-  developer. More code, in bigger chunks, landing on the same reviewers.
-- LinearB's 2026 benchmarks, drawn from 8.1 million PRs, found AI-generated code
-  [waits 4.6x longer to get picked up for review](https://byteiota.com/software-engineering-benchmarks-2026-ai-code-review-gap/)
-  than human code, and clears at an acceptance rate of just **32.7%, against
-  84.4% for human-written code**. Review already eats roughly 57% of cycle time,
-  and AI widens that queue rather than shrinking it.
-- Madrona's June 2026
-  [survey of engineering leaders](https://www.madrona.com/on-to-the-next-bottleneck-what-product-engineering-leaders-told-us-about-ai-in-software-development/)
-  (organizations employing 10,000-plus engineers) said it plainly: the cost of
-  generating software is dropping and "the constraints are moving elsewhere."
-  Asked where the bottleneck went, **57% named code review queue time**; the top
-  thing holding them back from giving agents more autonomy was capacity to
+- [Faros AI](https://www.faros.ai/blog/ai-software-engineering) measured review
+  time per PR up **91%** and average **PR size up 154%** on top of all those extra
+  PRs, with bugs up roughly 9% per developer. The same reviewers now face more
+  code in bigger diffs.
+- LinearB's 2026 benchmarks, built from 8.1 million PRs, found that AI-generated
+  code [waits 4.6x longer to get picked up for review](https://byteiota.com/software-engineering-benchmarks-2026-ai-code-review-gap/)
+  than human code, and gets accepted only **32.7% of the time, against 84.4% for
+  human-written code**. Review already accounts for about 57% of cycle time, and
+  AI lengthens that queue rather than shortening it.
+- Madrona's June 2026 [survey of engineering leaders](https://www.madrona.com/on-to-the-next-bottleneck-what-product-engineering-leaders-told-us-about-ai-in-software-development/)
+  at organizations employing more than 10,000 engineers found the cost of
+  generating software falling while, in their words, "the constraints are moving
+  elsewhere." Asked where, **57% pointed at code review queue time**, and the main
+  thing stopping them from giving agents more autonomy was their own capacity to
   validate the output.
 
-None of this is exotic. It's [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law):
-speed up one stage all you want, and the stage you didn't speed up sets the
-ceiling. Generation was the parallel part. Verification is the serial part, and
-it's still mostly a human reading a diff. DORA's April 2026 report models the cost
-directly as an "instability tax," with change failure rate drifting from 5% to 6%
-after adoption, and prescribes the unglamorous fixes: smaller batches, automated
-testing, real CI.
+This is just [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law). Make one
+stage much faster, leave the next one alone, and the slow stage sets your ceiling.
+Generation parallelizes across as many agents as you care to run. Verification
+still comes down to a person reading a diff. DORA's April 2026 report even puts a
+number on the damage, an "instability tax" where change failure rate creeps from
+5% to 6% after adoption, and its advice is the boring kind that works: smaller
+batches, automated testing, real CI.
 
 <Mermaid
   caption="Under agents the authoring step (left) collapses toward free, so the verify step (right) becomes the binding constraint. DORA lead time mostly brackets the shrinking segment; MTTV brackets the growing one."
@@ -91,21 +86,21 @@ flowchart LR
 
 ## Change candidates
 
-Agentic pipelines don't always route through a person opening a pull request. You
-get patch queues, generated branches, merge-group commits, bots pushing straight
-to a branch. To measure all of it the same way, I'll talk about a **change
-candidate** rather than a PR: a proposed diff at a specific revision, tagged with
-who wrote it (human, agent, automation), where it's headed, how risky it is, which
-version of the bar applies to it, what evidence it carries, and whether it got
-promoted. A pull request is just one shape a candidate takes. Everything below is
-per candidate revision.
+Agentic pipelines often skip the usual pull request. You get patch queues,
+generated branches, merge-group commits, and bots pushing straight to a branch. To
+cover all of them, I'll use the term **change candidate** instead
+of PR. A candidate is a proposed diff at a specific revision, tagged with who wrote
+it (human, agent, automation), where it's headed, how risky it is, which version
+of the bar applies, what evidence it carries, and whether it shipped. A pull
+request is one kind of candidate. Everything below is measured per candidate
+revision.
 
 ## Write the bar down
 
-Everything else hangs off a written definition of what "verified" means, and it
-has to scale with risk or it turns into the box-ticking it's meant to replace. A
-change is verified when the evidence behind it matches how much damage it could
-do.
+Start with a written definition of what "verified" means. It has to scale with
+risk, otherwise it becomes one more checklist people clear without lowering any
+actual risk. A change counts as verified when the evidence behind it matches how
+much damage it could do.
 
 ```yaml
 # verification-bar.yml: evidence required scales with blast radius.
@@ -138,19 +133,18 @@ tiers:
     bypass: { allowed: true }
 ```
 
-Treat that file like production code: version it, review changes to it, and stamp
-the version onto each candidate at merge time so you can go back later and ask
-which bar a given change actually cleared. It's the same move as the repo
+Version that file and review changes to it the way you would production code, and
+record which version applied to each candidate at merge time, so later you can ask
+which bar a given change actually cleared. It plays the same role as the repo
 instructions file in
 [Anatomy of an Agentic Coding Session](/blog/anatomy-of-an-agentic-coding-session/).
-The most useful thing you can hand an agent is a machine-readable definition of
-done.
+Agents do better work when "done" is written down in a form they can read.
 
 ## Mean Time to Verify (MTTV)
 
-MTTV is how long a candidate revision sits between coming into existence and
-clearing its bar. Think of it as the slice of change lead time that still costs
-you something.
+MTTV measures how long a candidate revision takes to go from created to cleared by
+its bar. It isolates the part of change lead time agents didn't make cheaper,
+mostly the wait on checks, review, fixes, and approvals.
 
 ```ts
 import { Octokit } from "@octokit/rest";
@@ -186,9 +180,9 @@ async function mttvSeconds(octokit: Octokit, owner: string, repo: string, pull_n
 }
 ```
 
-Report it as a spread (p50, p75, p95) rather than an average, and break it apart
-so you know what you're actually fixing. Wall-clock MTTV lumps real verification
-work in with plain waiting, and those are worth separating:
+Report MTTV as percentiles (p50, p75, p95) rather than an average, and split the
+total so you can see where the time actually goes. Wall-clock MTTV mixes real
+verification work with idle waiting, and it helps to pull those apart:
 
 - **Time to first check result**: CI and static-analysis latency.
 - **Time to review decision**: human and domain approval latency.
@@ -211,10 +205,10 @@ work in with plain waiting, and those are worth separating:
 
 ## Coverage, weighted by risk
 
-Coverage asks a different question: of all the risk you shipped, how much of it
-cleared the bar? Count every change the same and a thousand docs tweaks will
-cheerfully bury one unreviewed auth change, so weight it by risk. Call that
-Risk-Adjusted Verification Coverage.
+Coverage measures how much of the risk you shipped actually cleared the bar. Count
+every change equally and a thousand docs tweaks can hide one unreviewed auth
+change, so weight each change by its risk. That gives you Risk-Adjusted
+Verification Coverage.
 
 ```sql
 -- change_events(candidate_sha, service, risk_weight, bar_cleared,
@@ -240,29 +234,30 @@ GROUP BY risk_weight, bar_cleared
 ORDER BY risk_weight DESC, bar_cleared;
 ```
 
-Until that second query pays off, coverage is a candidate for a leading signal
-and nothing more. If your fully verified critical changes fall over about as often
-as the bypassed ones, the bar is decoration, which is itself worth knowing far
-more than another deploy count is.
+Until that calibration query shows the bar predicting fewer incidents, treat
+coverage as a promising leading signal rather than a proven one. If your fully
+verified critical changes fail about as often as the bypassed ones, the bar isn't
+predicting real risk, and knowing that is worth more than another deploy count.
 
 ## Keep it honest
 
-There's an obvious way for this to go wrong: you drop velocity theater and pick up
-verification theater, where "97% verified" glows on a dashboard next to a steady
-drip of incidents. A few habits keep that from happening.
+The obvious failure mode is trading velocity theater for verification theater,
+where a dashboard reads "97% verified" while incidents keep landing. Keeping it
+honest takes three habits.
 
-Read the scorecard as a set of numbers that check each other. MTTV, coverage, and
-change fail rate pull in different directions, and any single one on its own is
-easy to fake. No delivery number survives being turned into a target, which is the
-whole reason this is a scorecard and not one more hero metric.
+Use the metrics together instead of one at a time. MTTV, coverage, and change fail
+rate each catch a different kind of problem, and any one of them alone is easy to
+game. That is the point of a scorecard, because any single delivery number gets
+gamed the moment it becomes the target.
 
-Then calibrate the bar against what actually happens: fail rate and incident rate
-per tier, rollback rate for agent-authored versus human-authored changes, the
-changes that cleared the whole bar and still fell over, the heavy bars you slapped
-on low-risk changes for no reason. A check that has never once caught a bug isn't
-evidence, so stop treating it like it is.
+Calibrate the bar against production outcomes: fail rate and incident rate by tier,
+rollback rate for agent-authored versus human-authored changes, changes that
+cleared the full bar and still broke, and oversized requirements on low-risk
+changes that bought you nothing. If a check has never caught a bug, it shouldn't
+count as strong evidence.
 
-And keep an eye on the bypass path, because that's where both numbers get gamed:
+Then watch the bypass path, since bypasses can make both MTTV and coverage look
+better than they are.
 
 | Metric | How it gets gamed | Guardrail |
 | --- | --- | --- |
@@ -274,31 +269,30 @@ And keep an eye on the bypass path, because that's where both numbers get gamed:
   A change that clears a strong bar can still be wrong, the same way a
   high-probability token can still be false (see
   [A Case for Small Context Windows](/blog/a-case-for-small-context-windows/)).
-  The scorecard tells you the process was followed; it can't tell you the code is
-  correct. That's what the lagging outcomes are for: they're the ground truth the
-  bar gets calibrated against.
+  The scorecard tells you the process was followed. Whether the code is actually
+  correct is a separate question, and the lagging outcomes are what answer it and
+  keep the bar honest.
 </Callout>
 
 ## Where to start
 
-You don't need the whole event pipeline to get going. A stripped-down version
-runs on data you already have:
+You can start without the full event pipeline. A stripped-down version runs on
+data you already have:
 
 1. Write a two or three tier `verification-bar.yml` and commit it.
 2. Compute MTTV p50 and p95 from PR, check-run, and review timestamps.
 3. Compute Risk-Adjusted Verification Coverage from merged PRs plus your deploy
    log, tagging bypasses.
-4. Once a month, run the calibration query and adjust the bar where the tiers
-   don't predict incidents.
+4. Once a month, run the calibration query and tighten or loosen the bar where the
+   tiers don't track incidents.
 
-Two things are worth doing in parallel, because the 2026 benchmark data shows
-elite teams already do them: cap PR size so reviews stay reviewable, and spread
-the review load so no single senior engineer becomes the queue. Both pull straight
-on MTTV.
+Two changes help right away, and the 2026 benchmark data shows the strongest teams
+already make them. Cap PR size so a reviewer can hold the whole change in their
+head, and spread review across the team so one senior engineer doesn't turn into
+the bottleneck. Both cut the waiting time inside MTTV.
 
-Leave deployment frequency and lead time up on the wall. They still say something
-real about the system. They just shouldn't be the score anymore. The score is
-closer to a question: what does it cost us to trust a change, how much of our
-actual risk is covered, and does clearing the bar keep us out of incidents. Or, to
-borrow the line from DORA's own 2026 report: measure the bottleneck the agent
-clears, not the code it writes.
+Keep tracking deployment frequency and lead time. They still describe the system,
+they just shouldn't be the headline number anymore. The better questions are what
+it costs you to trust a change, how much of your real risk cleared the bar, and
+whether clearing it actually keeps incidents down. Or, in DORA's own words from
+2026: measure the bottleneck the agent clears, not the code it writes.
