@@ -6,84 +6,78 @@ tags: ['Agentic SDLC', 'AI in Software Development', 'DORA', 'SRE']
 draft: false
 ---
 
-Look at almost any delivery dashboard right now and you'll see the same shape:
-more deploys, shorter lead time, the lines all pointing up. Of course they are.
-An agent is writing most of the diffs now, and it doesn't get tired or knock off
-at five. What the dashboard won't tell you is whether the extra speed was worth
-shipping.
+By 2026 the code part got fast. Teams leaning on AI agents merge
+[98% more pull requests](https://www.faros.ai/blog/ai-software-engineering) and
+finish more tasks than the teams that don't, and the generation problem is
+roughly solved. What almost nobody can show is that any of it made delivery
+better. In that same study of more than 10,000 developers, the team-level gains
+don't correlate with company-level throughput, DORA metrics, or quality. The
+individual wins just don't add up to an organizational one.
 
-There's decent evidence it wasn't.
-[METR](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
-ran a randomized trial in 2025: 16 experienced open-source developers, 246 of
-their own issues, each one randomly assigned to allow or forbid AI. With AI, they
-were **19% slower**. The uncomfortable part is that they never noticed. They had
-expected a 24% speedup going in, and even after finishing the work they still
-figured AI had sped them up by about 20%
-([paper](https://arxiv.org/abs/2507.09089)). If the people writing the code can't
-feel the slowdown, a throughput chart certainly won't feel it for them.
+They get absorbed somewhere, and it isn't a mystery where. When an agent opens
+three or four PRs before you've finished standup, the work doesn't vanish, it
+slides downstream to the one step nobody automated: deciding whether the change
+is safe to ship. Google's DORA team has a name for this in its April 2026
+[ROI of AI-Assisted Software Development](https://dora.dev/ai/roi/report/) report,
+the "verification tax," and a good line about what to do with it: "We don't
+measure AI by the code it writes but by the bottlenecks it clears."
 
-So this is about measuring something else. What follows is a small verification
-scorecard you can build from GitHub and CI data, aimed at the thing that got
-scarce once code got cheap to write: confidence that a change is safe to ship.
+That's what this post is about. What follows is a small verification scorecard you
+can build from GitHub and CI data. It ignores how much code you're shipping and
+watches the thing that actually went scarce: the capacity to trust a change enough
+to release it.
 
 ## What DORA measures
 
 [DORA](https://dora.dev/guides/dora-metrics/) is five metrics in two groups.
 Throughput is change lead time, deployment frequency, and failed deployment
 recovery time. Instability is change fail rate and deployment rework rate.
-They're good metrics, and DORA's research keeps finding that the fast teams and
-the stable teams are usually the same teams.
+They're still the right backbone, and DORA hasn't abandoned them; its April 2026
+[ROI report](https://dora.dev/ai/roi/report/) leans on them heavily.
 
-None of that changes here. The issue is narrower. Two of the five, deployment
-frequency and change lead time, were useful partly because writing code used to
-cost real effort. Take that cost away, let the change count balloon, and those
-two drift away from anything you'd actually pay for. DORA nearly says so itself,
-in its list of [pitfalls](https://dora.dev/guides/dora-metrics/): "Setting metrics
-as a goal. Ignoring Goodhart's law." Agents make that an easy trap to walk into.
+The trouble is that two of them, deployment frequency and change lead time, get
+easy to run up once an agent is doing the typing. You can post big gains on both
+while the delivery you actually care about goes nowhere. That's not a hunch: in
+[Faros AI's study](https://www.faros.ai/blog/ai-software-engineering) of 10,000-plus
+developers, high-adoption teams merged 98% more PRs, and none of that team-level
+lift showed up in company throughput, DORA metrics, or quality. The dashboard
+number went up. The outcome didn't.
 
-| DORA signal | What it leaned on | Why it strains under agents | What to watch instead |
+| DORA signal | What it leaned on | Why it misleads in 2026 | What to watch instead |
 | --- | --- | --- | --- |
 | Deployment frequency | Shipping was gated by human throughput | Agents open and merge changes at machine rate; the count inflates without more value | Share of changes that cleared a real verification bar |
 | Change lead time | Commit to deploy tracked the expensive path | The authoring segment collapses toward pipeline runtime | Time to *verify*, not time to write and deploy |
 | Change fail rate / rework | Lagging outcome of human-authored change | Still valid, but blind to how much unverified change you shipped | Keep it, and calibrate the bar against it |
 
-## Why the numbers drift
+## The bottleneck moved
 
-Goodhart's law is the tidy name for it. Manheim and Garrabrant's
-[taxonomy](https://arxiv.org/abs/1803.04585) sorts the failure into a handful of
-mechanisms and makes one point that matters here: how badly a proxy breaks
-depends on how much optimization pressure you aim at it, and they call out AI as
-the thing that turns that pressure way up. A metric a person could gently nudge is
-a metric an agent will bury. Deployment frequency is the easiest one to bury.
+So where did the work go? To review. This is the most consistent finding in the
+recent data, and it shows up from several directions at once:
 
-You don't have to take the theory on faith. The gap between volume and quality
-shows up in the data:
+- Alongside those extra PRs,
+  [Faros AI](https://www.faros.ai/blog/ai-software-engineering) measured review
+  time per PR up **91%**, average **PR size up 154%**, and bugs up about 9% per
+  developer. More code, in bigger chunks, landing on the same reviewers.
+- LinearB's 2026 benchmarks, drawn from 8.1 million PRs, found AI-generated code
+  [waits 4.6x longer to get picked up for review](https://byteiota.com/software-engineering-benchmarks-2026-ai-code-review-gap/)
+  than human code, and clears at an acceptance rate of just **32.7%, against
+  84.4% for human-written code**. Review already eats roughly 57% of cycle time,
+  and AI widens that queue rather than shrinking it.
+- Madrona's June 2026
+  [survey of engineering leaders](https://www.madrona.com/on-to-the-next-bottleneck-what-product-engineering-leaders-told-us-about-ai-in-software-development/)
+  (organizations employing 10,000-plus engineers) said it plainly: the cost of
+  generating software is dropping and "the constraints are moving elsewhere."
+  Asked where the bottleneck went, **57% named code review queue time**; the top
+  thing holding them back from giving agents more autonomy was capacity to
+  validate the output.
 
-- GitClear looked at roughly 153 million changed lines and found code churn,
-  lines reverted or reworked within two weeks, on track to
-  [double in 2024](https://www.gitclear.com/coding_on_copilot_data_shows_ais_downward_pressure_on_code_quality)
-  against its 2021 pre-AI baseline, alongside more copy-pasted code and less reuse.
-- Developers are wary of the output themselves: in DORA's
-  [2024 survey](https://dora.dev/research/2024/ai-preview/), only 24% said they
-  trust AI-generated code "a lot" or "a great deal."
-- And the code measures out riskier. In a controlled study, people using an AI
-  assistant wrote [less secure code](https://arxiv.org/abs/2211.03622) and were
-  more sure it was fine (Perry et al., CCS 2023); Copilot produced a vulnerability
-  in about [40% of 1,689 generated programs](https://arxiv.org/abs/2108.09293)
-  across high-risk scenarios (Pearce et al., IEEE S&P 2022).
-
-The bottleneck moved, in other words. Goldratt's Theory of Constraints puts it
-bluntly: effort spent anywhere but the bottleneck is wasted. Once authoring isn't
-the bottleneck, generating even more of it just stacks work up in front of
-whatever is, and what's left is getting enough confidence to ship. That
-confidence comes mostly from review, and review doesn't scale the way generation
-does. It gets worse as changes get bigger (Bacchelli and Bird,
-[ICSE 2013](https://doi.org/10.1109/ICSE.2013.6606617)), which is why Google tells
-its engineers to keep changes near 100 lines: the big ones just get
-[skimmed](https://google.github.io/eng-practices/review/developer/small-cls.html).
-That same style guide allows exactly one excuse for a giant diff, that it came
-from "a tool that you trust completely." An agent is the tool you can't trust
-completely yet, so the exception doesn't save you.
+None of this is exotic. It's [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law):
+speed up one stage all you want, and the stage you didn't speed up sets the
+ceiling. Generation was the parallel part. Verification is the serial part, and
+it's still mostly a human reading a diff. DORA's April 2026 report models the cost
+directly as an "instability tax," with change failure rate drifting from 5% to 6%
+after adoption, and prescribes the unglamorous fixes: smaller batches, automated
+testing, real CI.
 
 <Mermaid
   caption="Under agents the authoring step (left) collapses toward free, so the verify step (right) becomes the binding constraint. DORA lead time mostly brackets the shrinking segment; MTTV brackets the growing one."
@@ -194,8 +188,7 @@ async function mttvSeconds(octokit: Octokit, owner: string, repo: string, pull_n
 
 Report it as a spread (p50, p75, p95) rather than an average, and break it apart
 so you know what you're actually fixing. Wall-clock MTTV lumps real verification
-work in with plain waiting, and Reinertsen's flow work (*The Principles of
-Product Development Flow*) is the reason to pull them apart:
+work in with plain waiting, and those are worth separating:
 
 - **Time to first check result**: CI and static-analysis latency.
 - **Time to review decision**: human and domain approval latency.
@@ -258,10 +251,10 @@ There's an obvious way for this to go wrong: you drop velocity theater and pick 
 verification theater, where "97% verified" glows on a dashboard next to a steady
 drip of incidents. A few habits keep that from happening.
 
-Read the scorecard as a set of numbers that check each other, the way the
-[SPACE framework](https://dl.acm.org/doi/10.1145/3454122.3454124) (Forsgren et
-al., 2021) argues you have to read productivity. MTTV, coverage, and change fail
-rate pull in different directions, and any single one on its own is easy to fake.
+Read the scorecard as a set of numbers that check each other. MTTV, coverage, and
+change fail rate pull in different directions, and any single one on its own is
+easy to fake. No delivery number survives being turned into a target, which is the
+whole reason this is a scorecard and not one more hero metric.
 
 Then calibrate the bar against what actually happens: fail rate and incident rate
 per tier, rollback rate for agent-authored versus human-authored changes, the
@@ -298,9 +291,14 @@ runs on data you already have:
 4. Once a month, run the calibration query and adjust the bar where the tiers
    don't predict incidents.
 
+Two things are worth doing in parallel, because the 2026 benchmark data shows
+elite teams already do them: cap PR size so reviews stay reviewable, and spread
+the review load so no single senior engineer becomes the queue. Both pull straight
+on MTTV.
+
 Leave deployment frequency and lead time up on the wall. They still say something
 real about the system. They just shouldn't be the score anymore. The score is
 closer to a question: what does it cost us to trust a change, how much of our
-actual risk is covered, and does clearing the bar keep us out of incidents. That's
-harder to graph than a deploy count, and it's the only version of "are we shipping
-well" that survives the code writing itself.
+actual risk is covered, and does clearing the bar keep us out of incidents. Or, to
+borrow the line from DORA's own 2026 report: measure the bottleneck the agent
+clears, not the code it writes.
