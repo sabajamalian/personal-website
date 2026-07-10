@@ -6,37 +6,40 @@ tags: ['Agentic SDLC', 'AI in Software Development', 'DORA', 'SRE']
 draft: false
 ---
 
-Your delivery dashboard says the team got faster: more deploys, shorter lead
-time. Now that an agent writes most of the diffs, that was almost guaranteed to
-happen. The question the dashboard can no longer answer is whether faster meant
-better.
+Look at almost any delivery dashboard right now and you'll see the same shape:
+more deploys, shorter lead time, the lines all pointing up. Of course they are.
+An agent is writing most of the diffs now, and it doesn't get tired or knock off
+at five. What the dashboard won't tell you is whether the extra speed was worth
+shipping.
 
-There is real evidence the two have come apart. In a 2025 randomized trial,
+There's decent evidence it wasn't.
 [METR](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
-had 16 experienced open-source developers work 246 of their own issues with and
-without AI. With AI they were **19% slower**, yet they expected a 24% speedup and
-still believed they had gotten a 20% speedup after the fact
-([paper](https://arxiv.org/abs/2507.09089)). Perception and measurement pointed
-in opposite directions. If the people doing the work can't feel the difference,
-a throughput chart won't show it to you either.
+ran a randomized trial in 2025: 16 experienced open-source developers, 246 of
+their own issues, each one randomly assigned to allow or forbid AI. With AI, they
+were **19% slower**. The uncomfortable part is that they never noticed. They had
+expected a 24% speedup going in, and even after finishing the work they still
+figured AI had sped them up by about 20%
+([paper](https://arxiv.org/abs/2507.09089)). If the people writing the code can't
+feel the slowdown, a throughput chart certainly won't feel it for them.
 
-This post is a practitioner's answer: a small verification scorecard you can wire
-into GitHub and CI, built to measure trust to ship rather than volume of change.
+So this is about measuring something else. What follows is a small verification
+scorecard you can build from GitHub and CI data, aimed at the thing that got
+scarce once code got cheap to write: confidence that a change is safe to ship.
 
-## What DORA actually measures (and where agents strain it)
+## What DORA measures
 
-[DORA](https://dora.dev/guides/dora-metrics/) is a five-metric model, split into
-throughput (change lead time, deployment frequency, failed deployment recovery
-time) and instability (change fail rate, deployment rework rate). These are good
-metrics. They grade the whole delivery system, and DORA's own research keeps
-finding that speed and stability rise together for strong teams.
+[DORA](https://dora.dev/guides/dora-metrics/) is five metrics in two groups.
+Throughput is change lead time, deployment frequency, and failed deployment
+recovery time. Instability is change fail rate and deployment rework rate.
+They're good metrics, and DORA's research keeps finding that the fast teams and
+the stable teams are usually the same teams.
 
-The strain isn't that the numbers are wrong. It's that two of them, deployment
-frequency and change lead time, were informative because human authoring used to
-be a real cost. Remove that cost and inflate the change count, and those two
-signals drift away from delivered value. DORA says as much in its own
-[pitfalls](https://dora.dev/guides/dora-metrics/): "Setting metrics as a goal.
-Ignoring Goodhart's law." That is exactly the failure mode agents make easy.
+None of that changes here. The issue is narrower. Two of the five, deployment
+frequency and change lead time, were useful partly because writing code used to
+cost real effort. Take that cost away, let the change count balloon, and those
+two drift away from anything you'd actually pay for. DORA nearly says so itself,
+in its list of [pitfalls](https://dora.dev/guides/dora-metrics/): "Setting metrics
+as a goal. Ignoring Goodhart's law." Agents make that an easy trap to walk into.
 
 | DORA signal | What it leaned on | Why it strains under agents | What to watch instead |
 | --- | --- | --- | --- |
@@ -44,43 +47,43 @@ Ignoring Goodhart's law." That is exactly the failure mode agents make easy.
 | Change lead time | Commit to deploy tracked the expensive path | The authoring segment collapses toward pipeline runtime | Time to *verify*, not time to write and deploy |
 | Change fail rate / rework | Lagging outcome of human-authored change | Still valid, but blind to how much unverified change you shipped | Keep it, and calibrate the bar against it |
 
-## Why the throughput signals wobble
+## Why the numbers drift
 
-The clean way to name this is Goodhart's law. Manheim and Garrabrant's
-[taxonomy](https://arxiv.org/abs/1803.04585) catalogs several mechanisms and
-makes the key point directly: Goodhart effects scale with the "optimization
-power" pointed at the proxy, which is why they call AI's added optimization power
-"especially critical." A metric that a person could nudge is a metric an agent
-can pin to the ceiling. Deployment frequency is the easiest to pin.
+Goodhart's law is the tidy name for it. Manheim and Garrabrant's
+[taxonomy](https://arxiv.org/abs/1803.04585) sorts the failure into a handful of
+mechanisms and makes one point that matters here: how badly a proxy breaks
+depends on how much optimization pressure you aim at it, and they call out AI as
+the thing that turns that pressure way up. A metric a person could gently nudge is
+a metric an agent will bury. Deployment frequency is the easiest one to bury.
 
-The evidence that volume has decoupled from quality is not subtle:
+You don't have to take the theory on faith. The gap between volume and quality
+shows up in the data:
 
-- **Churn is rising.** GitClear's analysis of ~153 million changed lines found
-  code churn (lines reverted or reworked within two weeks) on pace to
+- GitClear looked at roughly 153 million changed lines and found code churn,
+  lines reverted or reworked within two weeks, on track to
   [double in 2024](https://www.gitclear.com/coding_on_copilot_data_shows_ais_downward_pressure_on_code_quality)
-  versus its 2021 pre-AI baseline, with more copy-pasted code and less reuse.
-- **Trust is low.** In DORA's
-  [2024 survey](https://dora.dev/research/2024/ai-preview/), only 24% of
-  developers said they trust AI-generated code "a lot" or "a great deal."
-- **Security regresses.** In a controlled study, participants with an AI
-  assistant wrote [significantly less secure code](https://arxiv.org/abs/2211.03622)
-  (Perry et al., CCS 2023) and were more likely to believe it was secure. Copilot
-  emitted a vulnerability in about
-  [40% of 1,689 generated programs](https://arxiv.org/abs/2108.09293) across
-  high-risk scenarios (Pearce et al., IEEE S&P 2022).
+  against its 2021 pre-AI baseline, alongside more copy-pasted code and less reuse.
+- Developers are wary of the output themselves: in DORA's
+  [2024 survey](https://dora.dev/research/2024/ai-preview/), only 24% said they
+  trust AI-generated code "a lot" or "a great deal."
+- And the code measures out riskier. In a controlled study, people using an AI
+  assistant wrote [less secure code](https://arxiv.org/abs/2211.03622) and were
+  more sure it was fine (Perry et al., CCS 2023); Copilot produced a vulnerability
+  in about [40% of 1,689 generated programs](https://arxiv.org/abs/2108.09293)
+  across high-risk scenarios (Pearce et al., IEEE S&P 2022).
 
-So the constraint moved. Theory of Constraints (Goldratt) has a blunt rule:
-optimizing anything that isn't the bottleneck is waste. When authoring stops
-being the bottleneck, driving authoring throughput harder just piles inventory in
-front of the new bottleneck, which is establishing enough trust to ship. Review
-is where that trust gets built, and review does not scale like generation. Review
-effectiveness [drops as change size grows](https://doi.org/10.1109/ICSE.2013.6606617)
-(Bacchelli and Bird, ICSE 2013), and Google's guidance is to keep changes near
-100 lines because large ones get
-[reviewed less thoroughly](https://google.github.io/eng-practices/review/developer/small-cls.html).
-That same guide grants one exception for a big diff: when it was produced by "a
-tool that you trust completely." An agent is precisely the tool whose output you
-can't yet trust completely. That is the whole problem in one sentence.
+The bottleneck moved, in other words. Goldratt's Theory of Constraints puts it
+bluntly: effort spent anywhere but the bottleneck is wasted. Once authoring isn't
+the bottleneck, generating even more of it just stacks work up in front of
+whatever is, and what's left is getting enough confidence to ship. That
+confidence comes mostly from review, and review doesn't scale the way generation
+does. It gets worse as changes get bigger (Bacchelli and Bird,
+[ICSE 2013](https://doi.org/10.1109/ICSE.2013.6606617)), which is why Google tells
+its engineers to keep changes near 100 lines: the big ones just get
+[skimmed](https://google.github.io/eng-practices/review/developer/small-cls.html).
+That same style guide allows exactly one excuse for a giant diff, that it came
+from "a tool that you trust completely." An agent is the tool you can't trust
+completely yet, so the exception doesn't save you.
 
 <Mermaid
   caption="Under agents the authoring step (left) collapses toward free, so the verify step (right) becomes the binding constraint. DORA lead time mostly brackets the shrinking segment; MTTV brackets the growing one."
@@ -92,23 +95,23 @@ flowchart LR
 `}
 />
 
-## The unit is a change candidate, not a PR
+## Change candidates
 
-Agentic pipelines don't always look like a person opening a pull request. They
-produce patch queues, generated branches, merge-group commits, and direct
-automation commits. To measure them uniformly, define the primitive as a **change
-candidate**: a proposed diff at a specific revision, with an author type
-(human, agent, automation), a target environment, a risk class, a verification
-bar version, an evidence set, and a promotion decision. A GitHub PR is one
-implementation of a candidate, not the definition. Everything below is computed
+Agentic pipelines don't always route through a person opening a pull request. You
+get patch queues, generated branches, merge-group commits, bots pushing straight
+to a branch. To measure all of it the same way, I'll talk about a **change
+candidate** rather than a PR: a proposed diff at a specific revision, tagged with
+who wrote it (human, agent, automation), where it's headed, how risky it is, which
+version of the bar applies to it, what evidence it carries, and whether it got
+promoted. A pull request is just one shape a candidate takes. Everything below is
 per candidate revision.
 
-## The verification bar as code
+## Write the bar down
 
-The centerpiece is a declarative definition of what "verified" means, and it has
-to be risk-adaptive or it becomes the exact compliance theater it's meant to
-replace. A verified change is one whose required evidence matches the risk of the
-surface it touched.
+Everything else hangs off a written definition of what "verified" means, and it
+has to scale with risk or it turns into the box-ticking it's meant to replace. A
+change is verified when the evidence behind it matches how much damage it could
+do.
 
 ```yaml
 # verification-bar.yml: evidence required scales with blast radius.
@@ -141,18 +144,19 @@ tiers:
     bypass: { allowed: true }
 ```
 
-The bar is a real artifact: versioned, reviewed like production code, and stamped
-onto every candidate at merge time (so you can later ask which bar a change
-actually cleared). This is the same idea as the repo instructions file from
-[Anatomy of an Agentic Coding Session](/blog/anatomy-of-an-agentic-coding-session/):
-the highest-leverage thing you can hand an agent is a machine-readable definition
-of done.
+Treat that file like production code: version it, review changes to it, and stamp
+the version onto each candidate at merge time so you can go back later and ask
+which bar a given change actually cleared. It's the same move as the repo
+instructions file in
+[Anatomy of an Agentic Coding Session](/blog/anatomy-of-an-agentic-coding-session/).
+The most useful thing you can hand an agent is a machine-readable definition of
+done.
 
 ## Mean Time to Verify (MTTV)
 
-MTTV is the elapsed time from a candidate revision's creation to the first moment
-that same revision satisfies its bar. It's the successor to change lead time,
-scoped to the segment that now costs something.
+MTTV is how long a candidate revision sits between coming into existence and
+clearing its bar. Think of it as the slice of change lead time that still costs
+you something.
 
 ```ts
 import { Octokit } from "@octokit/rest";
@@ -188,10 +192,10 @@ async function mttvSeconds(octokit: Octokit, owner: string, repo: string, pull_n
 }
 ```
 
-Report MTTV as a distribution (p50, p75, p95), not a mean, and split it so you
-optimize the right part. Wall-clock MTTV mixes active verification with waiting,
-and Reinertsen's flow work (*The Principles of Product Development Flow*) is the
-reason to separate them:
+Report it as a spread (p50, p75, p95) rather than an average, and break it apart
+so you know what you're actually fixing. Wall-clock MTTV lumps real verification
+work in with plain waiting, and Reinertsen's flow work (*The Principles of
+Product Development Flow*) is the reason to pull them apart:
 
 - **Time to first check result**: CI and static-analysis latency.
 - **Time to review decision**: human and domain approval latency.
@@ -212,11 +216,12 @@ reason to separate them:
   approximation.
 </Callout>
 
-## Risk-Adjusted Verification Coverage
+## Coverage, weighted by risk
 
-Coverage answers the leading question: of the risk you shipped, how much actually
-cleared the bar? Counting changes equally lets a thousand docs edits hide one
-unverified auth change, so weight by risk.
+Coverage asks a different question: of all the risk you shipped, how much of it
+cleared the bar? Count every change the same and a thousand docs tweaks will
+cheerfully bury one unreviewed auth change, so weight it by risk. Call that
+Risk-Adjusted Verification Coverage.
 
 ```sql
 -- change_events(candidate_sha, service, risk_weight, bar_cleared,
@@ -242,29 +247,29 @@ GROUP BY risk_weight, bar_cleared
 ORDER BY risk_weight DESC, bar_cleared;
 ```
 
-Coverage is a leading exposure *candidate*, not proof of safety, until that second
-query earns it. If fully verified critical changes have the same incident rate as
-bypassed ones, your bar is decorative and you've learned something more useful
-than any deploy count.
+Until that second query pays off, coverage is a candidate for a leading signal
+and nothing more. If your fully verified critical changes fall over about as often
+as the bypassed ones, the bar is decoration, which is itself worth knowing far
+more than another deploy count is.
 
-## Calibrate it, or it's just verification theater
+## Keep it honest
 
-The honest risk here is real: you can swap velocity theater for verification
-theater, where "97% verified" sits next to a steady stream of incidents. Three
-things keep the scorecard honest.
+There's an obvious way for this to go wrong: you drop velocity theater and pick up
+verification theater, where "97% verified" glows on a dashboard next to a steady
+drip of incidents. A few habits keep that from happening.
 
-First, **read it as a constellation in tension**, the way the
+Read the scorecard as a set of numbers that check each other, the way the
 [SPACE framework](https://dl.acm.org/doi/10.1145/3454122.3454124) (Forsgren et
-al., 2021) argues productivity must be read. MTTV, coverage, and change fail rate
-constrain each other; any one alone is gameable.
+al., 2021) argues you have to read productivity. MTTV, coverage, and change fail
+rate pull in different directions, and any single one on its own is easy to fake.
 
-Second, **calibrate the bar against outcomes**: change fail rate and incident
-rate by verification tier, rollback rate for agent- versus human-authored
-changes, "false confidence" (cleared the full bar and still caused an incident),
-and "excess friction" (heavy bar on low-risk changes with no payoff). A green
-check that never catches a defect should stop counting as evidence.
+Then calibrate the bar against what actually happens: fail rate and incident rate
+per tier, rollback rate for agent-authored versus human-authored changes, the
+changes that cleared the whole bar and still fell over, the heavy bars you slapped
+on low-risk changes for no reason. A check that has never once caught a bug isn't
+evidence, so stop treating it like it is.
 
-Third, **govern the bypass path**, because that's where both metrics get gamed:
+And keep an eye on the bypass path, because that's where both numbers get gamed:
 
 | Metric | How it gets gamed | Guardrail |
 | --- | --- | --- |
@@ -276,15 +281,15 @@ Third, **govern the bypass path**, because that's where both metrics get gamed:
   A change that clears a strong bar can still be wrong, the same way a
   high-probability token can still be false (see
   [A Case for Small Context Windows](/blog/a-case-for-small-context-windows/)).
-  The scorecard measures process trust, not truth. That's why the lagging
-  outcomes stay in the picture: they're the ground truth the bar is calibrated
-  against.
+  The scorecard tells you the process was followed; it can't tell you the code is
+  correct. That's what the lagging outcomes are for: they're the ground truth the
+  bar gets calibrated against.
 </Callout>
 
-## Adopt it Monday
+## Where to start
 
-You don't need the full event model to start. The minimal version runs on data
-you already have:
+You don't need the whole event pipeline to get going. A stripped-down version
+runs on data you already have:
 
 1. Write a two or three tier `verification-bar.yml` and commit it.
 2. Compute MTTV p50 and p95 from PR, check-run, and review timestamps.
@@ -293,8 +298,9 @@ you already have:
 4. Once a month, run the calibration query and adjust the bar where the tiers
    don't predict incidents.
 
-Keep deployment frequency and lead time on the dashboard. They still describe the
-system. Just stop treating them as the score. When writing code is cheap, the
-scarce resource is trust, so measure the cost of earning it (MTTV), the coverage
-of it (Risk-Adjusted Verification Coverage), and whether it actually predicts
-safety (calibration). That's the number worth moving.
+Leave deployment frequency and lead time up on the wall. They still say something
+real about the system. They just shouldn't be the score anymore. The score is
+closer to a question: what does it cost us to trust a change, how much of our
+actual risk is covered, and does clearing the bar keep us out of incidents. That's
+harder to graph than a deploy count, and it's the only version of "are we shipping
+well" that survives the code writing itself.
