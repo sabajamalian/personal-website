@@ -20,8 +20,8 @@ together."
 A bank, a software company, a consultancy, or a dog-food subscription service
 could use it after changing the logo.
 
-This feels like the average shape of a strategy deck in 2026. It is structured,
-and it looks professional. It is also very "interchangeable".
+The familiar structure looks professional, but it also makes the deck
+interchangeable.
 
 LLMs are very good at producing plausible continuations. Ask for a corporate
 deck and the likely continuation is familiar:
@@ -73,13 +73,11 @@ professional and finished.
 
 ## Generic work weakens the message
 
-What should the audience remember? What should they believe? What evidence
-earns that belief? What should they do next?
+What should the audience remember or do? Which claim should they believe, and
+what evidence supports it?
 
 Generic layouts flatten those decisions. Every pillar receives the same card.
 Every benefit gets the same icon. Every metric gets the same giant type.
-
-I believe this is bad because:
 
 - **Nothing sticks.** Familiar components produce recognition, not memory.
 - **Your brand becomes replaceable.** If a competitor can publish the deck
@@ -91,7 +89,7 @@ I believe this is bad because:
 - **False precision borrows authority.** "42%" looks measured even when no
   measurement exists.
 
-Here is more evidence (not from me) if you are still not convinced:
+Three communication books give those failures practical names:
 
 - Chip and Dan Heath's [*Made to
   Stick*](https://www.penguinrandomhouse.com/books/77687/made-to-stick-by-chip-heath-and-dan-heath/)
@@ -111,9 +109,8 @@ Here is more evidence (not from me) if you are still not convinced:
   the argument, language, examples, and visual choices alone?
 </Callout>
 
-This is not only a PowerPoint problem. LLMs reach for familiar language for the
-same reason they reach for familiar layouts. But fixing the sentence structures
-is slightly easier.
+The same defaults show up in prose, where repeated sentence patterns are easier
+to spot and edit.
 
 <Figure
   src="/assets/ai-slop/generic-ai-sentence.svg"
@@ -131,17 +128,16 @@ announcement, three equal benefit cards, and a rounded "Discover more" button.
   caption="Good-looking is not the same as on-brand."
 />
 
-Again, the problem is not technical quality. The email is balanced and
-readable. The problem is that the visual language and copy do not come from the
-company.
+The email is readable, but none of its copy or visual choices identify the
+company behind it.
 
 Brand is the set of choices that makes the content recognizable.
 Marty Neumeier's influential [*The Brand
 Gap*](https://www.martyneumeier.com/the-brand-gap) frames brand as the bridge
 between strategy and the experience people actually have. That is why
 changing the logo on an interchangeable artifact does not make it branded.
-It applies to personal brands too not just companies or organizations.
-AI may be killing your personal brand and digital identity if not used correctly.
+The same test works for a personal site: remove the name and avatar. Do the
+ideas, examples, and visual choices still identify the author?
 
 ## Do not let AI skip the decisions
 
@@ -164,7 +160,8 @@ styles](https://doi.org/10.1145/3706598.3713233). Professional designers wanted
 finer control and the ability to edit, not only another roll of the prompt
 dice.
 
-A better workflow separates thinking from production.
+Before generation, define the audience, the claim you will defend, the evidence
+behind it, and the brand rules the output must follow.
 
 <Mermaid
   caption="AI works better inside a brand and evidence system, with human decisions before and after generation."
@@ -199,9 +196,8 @@ fine-tune a model on marketing metrics, adapt it to audiences, and incorporate
 consumer feedback before generated ads could match or exceed conventional
 ones.
 
-Don't get me wrong; AI visuals do work but it is that context,
-feedback, and objectives that are the real work.
-
+AI visuals can work, but only after someone defines the audience and objective,
+then evaluates the output against both.
 
 ## Build the brand context once
 
@@ -225,7 +221,7 @@ brand/
     └── social-card.svg
 ```
 
-The brief can be short as it mostly just needs to contain decisions.
+Keep the brief short. Focus on decisions.
 
 ```yaml
 # brand/creative-brief.yml
@@ -271,13 +267,13 @@ that define fonts, colors, logos, and slide layouts. Teams can publish shared
 templates and media through a SharePoint [organization assets
 library](https://learn.microsoft.com/en-us/sharepoint/organization-assets-library).
 
-Templates are more important than ever in the era of generative AI. A good template
-encodes choices your organization has already made. A template is no longer a simple .pptx
-file as it must now include custom instructions, skills, markdown files, and example edge cases.
+For AI-assisted work, a `.pptx` is not the whole template. Keep it beside the
+custom instructions, reusable prompts or skills, Markdown references, approved
+examples, and edge cases that govern generated content.
 
-## Ask AI for options, preferrably in /plan mode
+## Ask AI for options, preferably in `/plan` mode
 
- Begin with a brief and ask for decisions you
+Begin with a brief and ask for decisions you
 can inspect.
 
 ```text
@@ -305,14 +301,11 @@ Use only the evidence in metrics.csv. No decorative cards. No invented
 numbers. Explain what each composition makes easy to understand.
 ```
 
-Now the model is helping with design work. It is not pretending the design
-decisions have already been made.
+At that point, the model is working from decisions instead of inventing them.
 
 ## Personal brands need constraints too
 
-A personal brand is a recognizable pattern of ideas and choices.
-
-Write down:
+For a personal site, write down:
 
 1. **Three beliefs you return to.** These become the spine of your work.
 2. **The proof you prefer.** Code, field notes, diagrams, benchmarks, or
@@ -324,8 +317,8 @@ Write down:
 5. **Your rejection list.** Generic hooks, fake urgency, stock gradients,
    unsourced metrics, and anything else that does not sound or look like you.
 
-Feed that system to AI and it can help you make more work without erasing the
-person behind it.
+Give those constraints to the model. Reject any draft that could have come from
+someone else's account.
 
 ## Review the artifact before it reviews you
 
@@ -342,8 +335,4 @@ post:
 
 If the first answer is yes, the work is not done.
 
-AI can make production faster. It can help you explore directions, pressure
-test an argument, retrieve examples, and adapt approved material. It should
-not be the only source of taste, evidence, or intent.
-
-The best AI-assisted work looks like someone with a point of view used a powerful tool.
+AI can draft the deck. You still own the claim and the evidence behind it.
