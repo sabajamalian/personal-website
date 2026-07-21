@@ -1,0 +1,349 @@
+---
+title: "Your AI Slide Deck Looks Like Everyone Else's"
+description: "One-shot AI presentation generators produce polished, generic work because they have no point of view, evidence, or brand context. The better use of AI is to support art direction, not replace it."
+pubDate: 2026-07-21
+tags: ['AI', 'GitHub Copilot', 'Branding', 'Marketing']
+draft: false
+---
+
+I asked AI to turn my idea and narrative into a slide deck. It gave me four
+pillars, three precise-looking numbers, a move-now-or-fall-behind slide, rounded
+cards, bright gradients, and a closing invitation to "build the future,
+together."
+
+<Figure
+  src="/assets/ai-slop/four-strategic-pillars.png"
+  alt="A generic presentation slide titled Four strategic pillars, naturally. Four equal cards are labeled Connect, Automate, Augment, and Scale."
+  caption="Three feels incomplete. Five will not fit without making the font smaller."
+/>
+
+A bank, a software company, a consultancy, or a dog-food subscription service
+could use it after changing the logo.
+
+This feels like the average shape of a strategy deck in 2026. It is structured,
+and it looks professional. It is also very "interchangeable".
+
+LLMs are very good at producing plausible continuations. Ask for a corporate
+deck and the likely continuation is familiar:
+
+1. Vision
+2. Current challenges
+3. Three or four pillars
+4. A simple process
+5. Large numbers
+6. A horizontal roadmap
+7. "Why now?"
+8. Inspirational close
+
+That sameness is not only my impression. In a 2026 *PNAS Nexus* study,
+[Emily Wenger and Yoed Kenett](https://doi.org/10.1093/pnasnexus/pgag042)
+gave standardized creativity tasks to many humans and multiple LLMs. Responses
+from different LLMs resembled one another far more than responses from
+different humans, even after the researchers controlled for key confounds. The
+study did not test slide decks, but it supports the mechanism behind the
+feeling: different models can still pull people toward similar creative
+starting points.
+
+Two preregistered experiments with 1,100 participants at CHI 2025 found a
+related effect. [LLM assistance improved performance while it was
+available](https://doi.org/10.1145/3706598.3714198), but it did not improve
+later unassisted creativity. In some conditions, originality and idea diversity
+fell. More generated options did not automatically produce more original
+thinking.
+
+Presentation generators combine that familiar story with a small set of
+familiar components: cards, circles, gradients, icons, timelines, and big
+numbers.
+
+<Figure
+  src="/assets/ai-slop/precise-looking-numbers.png"
+  alt="A dark presentation slide showing 42 percent faster decisions, 3.2 times more value, and 90 days to impact. The caveats say versus an unnamed baseline, measured somehow, and give or take reality."
+  caption="Large typography can make an assumption feel like evidence."
+/>
+
+The visual polish makes the problem worse. People tend to challenge a messy
+draft. A polished deck can move through a review because it already looks
+professional and finished.
+
+<Figure
+  src="/assets/ai-slop/move-now-wait.png"
+  alt="Two generic comparison cards. Move now promises to shape the category, compound learning, and own the narrative. Wait means follow the category, buy the playbook, and explain the delay."
+  caption="The false choice slide: act now and win, or wait and suffer unspecified consequences."
+/>
+
+## Generic work weakens the message
+
+What should the audience remember? What should they believe? What evidence
+earns that belief? What should they do next?
+
+Generic layouts flatten those decisions. Every pillar receives the same card.
+Every benefit gets the same icon. Every metric gets the same giant type.
+
+I believe this is bad because:
+
+- **Nothing sticks.** Familiar components produce recognition, not memory.
+- **Your brand becomes replaceable.** If a competitor can publish the deck
+  unchanged, the deck is not doing brand work.
+- **The audience cannot find your point of view.** The slides show a category
+  consensus instead of what you believe.
+- **Decoration competes with evidence.** A gradient gets more space than the
+  source behind a claim.
+- **False precision borrows authority.** "42%" looks measured even when no
+  measurement exists.
+
+Here is more evidence (not from me) if you are still not convinced:
+
+- Chip and Dan Heath's [*Made to
+  Stick*](https://www.penguinrandomhouse.com/books/77687/made-to-stick-by-chip-heath-and-dan-heath/)
+  argues for ideas that are simple, unexpected, concrete, credible, emotional,
+  and carried by stories. Generic AI copy tends to be abstract, expected, and
+  unsupported.
+- Simon Sinek's [*Start with
+  Why*](https://www.penguinrandomhouse.com/books/304046/start-with-why-15th-anniversary-edition-by-simon-sinek/)
+  starts communication with purpose. A cookie-cutter deck often starts with a
+  format and hopes the purpose appears later.
+- Jonah Berger's [*Contagious*](https://www.simonandschuster.com/books/Contagious/Jonah-Berger/9781451686586)
+  focuses on practical value, emotion, triggers, and stories. A polished email
+  full of vague benefits gives people little reason to remember or share it.
+
+<Callout type="important" title="The uncomfortable test">
+  Remove the logo. Could someone identify the company, product, or person from
+  the argument, language, examples, and visual choices alone?
+</Callout>
+
+This is not only a PowerPoint problem. LLMs reach for familiar language for the
+same reason they reach for familiar layouts. But fixing the sentence structures
+is slightly easier.
+
+<Figure
+  src="/assets/ai-slop/generic-ai-sentence.svg"
+  alt="A visual analysis of the sentence In today's rapidly evolving landscape, organizations must leverage innovative solutions to unlock efficiency, drive growth, and stay ahead of the curve. It contains abstract nouns and vague verbs but no examples, named product, person, or stakes."
+  caption="A sentence can be fluent and still contain no usable information."
+/>
+
+The same defaults show up in generated marketing emails. You get a purple
+gradient, abstract circles, "Hi [First Name]," a sentence about an exciting
+announcement, three equal benefit cards, and a rounded "Discover more" button.
+
+<Figure
+  src="/assets/ai-slop/generic-ai-email-template.svg"
+  alt="A deliberately generic marketing email with a purple gradient, abstract circles, vague announcement copy, three equal benefit cards, a rounded Discover More button, and a side panel annotating the repeated patterns."
+  caption="Good-looking is not the same as on-brand."
+/>
+
+Again, the problem is not technical quality. The email is balanced and
+readable. The problem is that the visual language and copy do not come from the
+company.
+
+Brand is the set of choices that makes the content recognizable.
+Marty Neumeier's influential [*The Brand
+Gap*](https://www.martyneumeier.com/the-brand-gap) frames brand as the bridge
+between strategy and the experience people actually have. That is why
+changing the logo on an interchangeable artifact does not make it branded.
+It applies to personal brands too not just companies or organizations.
+AI may be killing your personal brand and digital identity if not used correctly.
+
+## Do not let AI skip the decisions
+
+This prompt asks the model to invent the argument, evidence, story, hierarchy,
+and visual system in one pass:
+
+```text
+Create a professional 12-slide presentation about our AI transformation
+strategy. Use a modern design, compelling visuals, and an executive tone.
+```
+
+There is almost no information in it. "Professional," "modern," and
+"compelling" describe a safe middle. The model has to supply everything else.
+
+Designers describe the same failure from the other side of the prompt box. A
+CHI 2025 study based on interviews and the participants' actual design
+artifacts found recurring frustration with
+["take it or leave it" generation, ignored specifics, and inconsistent
+styles](https://doi.org/10.1145/3706598.3713233). Professional designers wanted
+finer control and the ability to edit, not only another roll of the prompt
+dice.
+
+A better workflow separates thinking from production.
+
+<Mermaid
+  caption="AI works better inside a brand and evidence system, with human decisions before and after generation."
+  code={`
+flowchart LR
+  A[Audience and desired change] --> B[Point of view]
+  E[Evidence and examples] --> B
+  R[Brand rules and references] --> C[AI generates options]
+  B --> C
+  C --> D[Human chooses, cuts, and edits]
+  D --> P[Deck]
+  D --> M[Email]
+  D --> S[Social post]
+  D --> W[Web page]
+`}
+/>
+
+Use AI backstage:
+
+- summarize research
+- find gaps in the argument
+- propose three narrative structures
+- turn evidence into chart options
+- generate variations within a chosen direction
+- adapt approved material to another channel
+- check a finished artifact against brand rules
+
+A recent *Journal of Marketing* study found that
+["off-the-shelf" visual generative AI was not aligned with marketing
+objectives](https://doi.org/10.1177/00222429251356993). The researchers had to
+fine-tune a model on marketing metrics, adapt it to audiences, and incorporate
+consumer feedback before generated ads could match or exceed conventional
+ones.
+
+Don't get me wrong; AI visuals do work but it is that context,
+feedback, and objectives that are the real work.
+
+
+## Build the brand context once
+
+You should not explain your identity from scratch in every prompt. Put it in a
+small, reusable source of truth.
+
+```text
+brand/
+├── positioning.md
+├── voice-and-language.md
+├── design-tokens.json
+├── proof-library/
+│   ├── customer-stories.md
+│   ├── metrics.csv
+│   └── product-screenshots/
+├── examples-we-like/
+├── examples-we-reject/
+└── templates/
+    ├── executive-deck.potx
+    ├── product-update.html
+    └── social-card.svg
+```
+
+The brief can be short as it mostly just needs to contain decisions.
+
+```yaml
+# brand/creative-brief.yml
+audience:
+  primary: engineering leaders at companies with 500+ developers
+  tension: AI increased output, but review capacity did not grow
+
+point_of_view:
+  belief: generation is cheap; verification is the new bottleneck
+  disagreement: more generated code is not the same as more delivered value
+
+voice:
+  use: [direct, technical, specific, slightly skeptical]
+  avoid:
+    - rapidly evolving landscape
+    - unlock potential
+    - seamless
+    - empower
+    - future-ready
+
+evidence:
+  require_source_for_numbers: true
+  preferred: [product screenshots, real workflows, measured before-and-after]
+
+visual:
+  dominant: charcoal
+  accent: electric coral
+  type: large editorial headlines with compact technical labels
+  motif: annotated system diagrams
+  avoid: [purple gradients, equal pillar cards, stock people, floating orbs]
+```
+
+Tools can load this context automatically. GitHub Copilot supports
+[repository-wide and path-specific custom
+instructions](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions),
+so the same voice and content rules can travel with the project instead of
+living in someone's prompt history.
+
+For organizations, PowerPoint itself can carry the visual system. Microsoft
+documents [brand templates for Copilot
+Cowork](https://learn.microsoft.com/en-us/microsoft-365/copilot/cowork/cowork-brand-templates)
+that define fonts, colors, logos, and slide layouts. Teams can publish shared
+templates and media through a SharePoint [organization assets
+library](https://learn.microsoft.com/en-us/sharepoint/organization-assets-library).
+
+Templates are more important than ever in the era of generative AI. A good template
+encodes choices your organization has already made. A template is no longer a simple .pptx
+file as it must now include custom instructions, skills, markdown files, and example edge cases.
+
+## Ask AI for options, preferrably in /plan mode
+
+ Begin with a brief and ask for decisions you
+can inspect.
+
+```text
+/plan Using the attached audience brief, evidence pack, and brand rules:
+
+1. Propose three different narrative structures.
+2. For each structure, state the main claim and the audience change it serves.
+3. Map every factual claim to a source. Mark unsupported claims.
+4. Suggest one visual metaphor that comes from the subject, not a template.
+5. List the presentation clichés you intentionally avoided.
+```
+
+Choose a structure. Challenge it. Then ask for slide-level options:
+
+```text
+For slide 4, the audience needs to understand why review time rose after AI
+adoption.
+
+Propose three compositions:
+- a queue diagram
+- a before-and-after chart
+- an annotated product screenshot
+
+Use only the evidence in metrics.csv. No decorative cards. No invented
+numbers. Explain what each composition makes easy to understand.
+```
+
+Now the model is helping with design work. It is not pretending the design
+decisions have already been made.
+
+## Personal brands need constraints too
+
+A personal brand is a recognizable pattern of ideas and choices.
+
+Write down:
+
+1. **Three beliefs you return to.** These become the spine of your work.
+2. **The proof you prefer.** Code, field notes, diagrams, benchmarks, or
+   customer stories.
+3. **Your language rules.** Sentence length, level of technical detail, words
+   you use, and words you avoid.
+4. **A visual motif.** Annotated screenshots, hand-drawn systems, terminal
+   output, editorial type, or another format tied to your subject.
+5. **Your rejection list.** Generic hooks, fake urgency, stock gradients,
+   unsourced metrics, and anything else that does not sound or look like you.
+
+Feed that system to AI and it can help you make more work without erasing the
+person behind it.
+
+## Review the artifact before it reviews you
+
+Use this five-question check before publishing a deck, email, landing page, or
+post:
+
+```text
+[ ] Could a competitor publish this unchanged?
+[ ] Is every number tied to a named source or measurement?
+[ ] Does each section make one clear claim?
+[ ] Is the hierarchy based on importance rather than symmetry?
+[ ] Is there at least one idea, phrase, example, or visual only we would use?
+```
+
+If the first answer is yes, the work is not done.
+
+AI can make production faster. It can help you explore directions, pressure
+test an argument, retrieve examples, and adapt approved material. It should
+not be the only source of taste, evidence, or intent.
+
+The best AI-assisted work looks like someone with a point of view used a powerful tool.
