@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">A deliberately generic AI-generated marketing email</title>
+  <desc id="desc">A mock email uses a purple gradient, abstract circles, vague announcement copy, three equal benefit cards, a rounded call-to-action button, and a generic footer. A side panel labels the repeated patterns.</desc>
+  <defs>
+    <linearGradient id="headerGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset=".55" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#db2777"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#0f172a" flood-opacity=".18"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#e9eef7"/>
+  <text x="70" y="64" fill="#64748b" font-family="Arial, sans-serif" font-size="19" font-weight="700" letter-spacing="3">THE GENERIC AI EMAIL STARTER PACK</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="102" width="1020" height="828" rx="24" fill="#ffffff"/>
+    <rect x="70" y="102" width="1020" height="48" rx="24" fill="#f8fafc"/>
+    <circle cx="105" cy="126" r="7" fill="#ef4444"/>
+    <circle cx="130" cy="126" r="7" fill="#f59e0b"/>
+    <circle cx="155" cy="126" r="7" fill="#22c55e"/>
+    <text x="580" y="132" text-anchor="middle" fill="#94a3b8" font-family="Arial, sans-serif" font-size="16">Preview: your exciting announcement</text>
+  </g>
+
+  <rect x="98" y="176" width="964" height="292" rx="24" fill="url(#headerGradient)"/>
+  <circle cx="162" cy="214" r="92" fill="#ffffff" opacity=".10"/>
+  <circle cx="1002" cy="410" r="150" fill="#ffffff" opacity=".10"/>
+  <circle cx="924" cy="228" r="48" fill="#22d3ee" opacity=".36"/>
+  <rect x="138" y="210" width="132" height="38" rx="19" fill="#ffffff" opacity=".18"/>
+  <text x="204" y="236" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="1.6">BIG NEWS</text>
+  <text x="138" y="316" fill="#ffffff" font-family="Arial, sans-serif" font-size="46" font-weight="800">A brighter future starts today.</text>
+  <text x="138" y="365" fill="#ede9fe" font-family="Arial, sans-serif" font-size="22">We are excited to announce a new experience designed with you in mind.</text>
+  <rect x="138" y="398" width="218" height="48" rx="24" fill="#ffffff"/>
+  <text x="247" y="429" text-anchor="middle" fill="#6d28d9" font-family="Arial, sans-serif" font-size="17" font-weight="800">DISCOVER MORE</text>
+
+  <text x="122" y="526" fill="#0f172a" font-family="Arial, sans-serif" font-size="28" font-weight="800">Hi [First Name],</text>
+  <text x="122" y="570" fill="#64748b" font-family="Arial, sans-serif" font-size="20">We hope this message finds you well. In today's fast-moving world,</text>
+  <text x="122" y="602" fill="#64748b" font-family="Arial, sans-serif" font-size="20">we remain committed to empowering your journey with solutions that matter.</text>
+
+  <g font-family="Arial, sans-serif">
+    <g>
+      <rect x="122" y="648" width="272" height="150" rx="20" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+      <circle cx="168" cy="692" r="24" fill="#dbeafe"/>
+      <path d="M157 692h22M168 681v22" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+      <text x="206" y="686" fill="#0f172a" font-size="18" font-weight="800">Simple</text>
+      <text x="206" y="716" fill="#64748b" font-size="15">Made for everyone.</text>
+      <text x="148" y="761" fill="#94a3b8" font-size="14">One short benefit line.</text>
+    </g>
+    <g>
+      <rect x="422" y="648" width="272" height="150" rx="20" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+      <circle cx="468" cy="692" r="24" fill="#ede9fe"/>
+      <path d="M458 699l9-16 11 16z" fill="none" stroke="#7c3aed" stroke-width="4" stroke-linejoin="round"/>
+      <text x="506" y="686" fill="#0f172a" font-size="18" font-weight="800">Powerful</text>
+      <text x="506" y="716" fill="#64748b" font-size="15">Ready to scale.</text>
+      <text x="448" y="761" fill="#94a3b8" font-size="14">A second vague benefit.</text>
+    </g>
+    <g>
+      <rect x="722" y="648" width="272" height="150" rx="20" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+      <circle cx="768" cy="692" r="24" fill="#fce7f3"/>
+      <path d="M757 692l8 8 15-18" fill="none" stroke="#db2777" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="806" y="686" fill="#0f172a" font-size="18" font-weight="800">Seamless</text>
+      <text x="806" y="716" fill="#64748b" font-size="15">Built around you.</text>
+      <text x="748" y="761" fill="#94a3b8" font-size="14">The obligatory third card.</text>
+    </g>
+  </g>
+
+  <line x1="122" y1="846" x2="994" y2="846" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="122" y="884" fill="#94a3b8" font-family="Arial, sans-serif" font-size="14">COMPANY LOGO</text>
+  <circle cx="904" cy="880" r="14" fill="#cbd5e1"/>
+  <circle cx="946" cy="880" r="14" fill="#cbd5e1"/>
+  <circle cx="988" cy="880" r="14" fill="#cbd5e1"/>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="1142" y="102" width="388" height="828" rx="24" fill="#0f172a" filter="url(#shadow)"/>
+    <text x="1190" y="170" fill="#f8fafc" font-size="30" font-weight="800">Why it feels familiar</text>
+    <text x="1190" y="208" fill="#94a3b8" font-size="18">The message could come from anyone.</text>
+
+    <circle cx="1208" cy="282" r="22" fill="#7c3aed"/>
+    <text x="1208" y="289" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="800">1</text>
+    <text x="1246" y="276" fill="#f8fafc" font-size="18" font-weight="700">Decorative gradient</text>
+    <text x="1246" y="303" fill="#94a3b8" font-size="15">No relationship to the product.</text>
+
+    <circle cx="1208" cy="384" r="22" fill="#2563eb"/>
+    <text x="1208" y="391" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="800">2</text>
+    <text x="1246" y="378" fill="#f8fafc" font-size="18" font-weight="700">Empty personalization</text>
+    <text x="1246" y="405" fill="#94a3b8" font-size="15">A merge field, not a relationship.</text>
+
+    <circle cx="1208" cy="486" r="22" fill="#0891b2"/>
+    <text x="1208" y="493" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="800">3</text>
+    <text x="1246" y="480" fill="#f8fafc" font-size="18" font-weight="700">Three equal benefits</text>
+    <text x="1246" y="507" fill="#94a3b8" font-size="15">Balanced layout, no priority.</text>
+
+    <circle cx="1208" cy="588" r="22" fill="#db2777"/>
+    <text x="1208" y="595" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="800">4</text>
+    <text x="1246" y="582" fill="#f8fafc" font-size="18" font-weight="700">Rounded CTA</text>
+    <text x="1246" y="609" fill="#94a3b8" font-size="15">"Discover" what, exactly?</text>
+
+    <circle cx="1208" cy="690" r="22" fill="#f59e0b"/>
+    <text x="1208" y="697" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="800">5</text>
+    <text x="1246" y="684" fill="#f8fafc" font-size="18" font-weight="700">Stock optimism</text>
+    <text x="1246" y="711" fill="#94a3b8" font-size="15">Exciting. Seamless. Empowering.</text>
+
+    <rect x="1190" y="788" width="292" height="88" rx="16" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+    <text x="1214" y="823" fill="#f8fafc" font-size="17" font-weight="800">Good-looking is not on-brand.</text>
+    <text x="1214" y="852" fill="#94a3b8" font-size="15">Taste needs context and choices.</text>
+  </g>
+</svg>
